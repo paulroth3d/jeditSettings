@@ -1,0 +1,235 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project name="Sample usage of Salesforce Ant tasks" default="test" basedir="."
+	xmlns:sf="http://com.salesforce"
+>
+	<property name="antlib" value="lib" />
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<pathelement location="${antlib}/ant-contrib-1.0b3.jar" />
+		</classpath>
+	</taskdef>
+	
+	<!-- constatnts -->
+	<property name="build.settings.file" value="build.settings" />
+	<property name="build.settings.path" value="./build.settings" />
+	
+	<available file="${build.settings.path}" property="build.settings.exists" />
+	
+	<property name="home.local.path" value="home" />
+	<property name="settings.local.path" value="settings" />
+	
+	<property name="macros.dir" value="macros" />
+	<property name="modes.dir" value="modes" />
+	<property name="abbrevs.file" value="abbrevs" />
+	<property name="keymaps.dir" value="keymaps" />
+	<property name="shortcuts.file" value="imported_keys.props" />
+	<property name="jars.dir" value="jars" />
+	
+	<!-- properties -->
+	<property file="build.settings"/>
+	<property environment="env"/>
+	
+	<!-- generated properties -->
+	<property name="macros.path" value="${home.path}/${macros.dir}" />
+	<property name="macros.local.path" value="${home.local.path}/${macros.dir}" />
+	<property name="modes.path" value="${home.path}/${modes.dir}" />
+	<property name="modes.local.path" value="${home.local.path}/${modes.dir}" />
+	
+	<property name="abbrevs.path" value="${settings.path}/${abbrevs.file}" />
+	<property name="abbrevs.local.path" value="${settings.local.path}/${abbrevs.file}" />
+	<property name="keymaps.path" value="${settings.path}/${keymaps.dir}" />
+	<property name="keymaps.local.path" value="${settings.local.path}/${keymaps.dir}" />
+	<property name="shortcuts.path" value="${keymaps.path}/${shortcuts.file}" />
+	<property name="shortcuts.local.path" value="${keymaps.local.path}/${shortcuts.file}" />
+	<property name="jars.path" value="${settings.path}/${jars.dir}" />
+	<property name="jars.local.path" value="${settings.local.path}/${jars.dir}" />
+	
+	<condition property="isWindows" value="true">
+		<os family="windows" />
+    </condition>
+	
+	<description><![CDATA[
+Sample project for managing and archiving jEdit work.
+
+* backup
+* restore
+
+	]]></description>
+	
+	<!-- common tasks -->
+	
+	<target name="status" description="Describes current status/settings">
+		<echo><![CDATA[
+home.path=${home.path}
+settings.path=${settings.path}
+
+macros.path=${macros.path}
+macros.local.path=${macros.local.path}
+modes.path=${modes.path}
+modes.local.path=${modes.local.path}
+]]></echo>
+	</target>
+	
+	<target name="backup" description="backs up the jedit home and settings files"
+		depends="checkSettings"
+	>
+		<echo>backing up</echo>
+		<mkdir dir="${home.local.path}" />
+		<mkdir dir="${macros.local.path}" />
+		<mkdir dir="${modes.local.path}" />
+		
+		<copy overwrite="true" todir="${macros.local.path}">
+			<fileset dir="${macros.path}" />
+		</copy>
+		
+		<copy overwrite="true" todir="${modes.local.path}">
+			<fileset dir="${modes.path}" />
+		</copy>
+		
+		<mkdir dir="${settings.local.path}" />
+		<mkdir dir="${keymaps.local.path}" />
+		
+		<copy overwrite="true"
+			file="${abbrevs.path}"
+			tofile="${abbrevs.local.path}"
+		/>
+		
+		<copy overwrite="true" todir="${keymaps.local.path}">
+			<fileset dir="${keymaps.path}" />
+		</copy>
+		
+		<copy overwrite="true" todir="${jars.local.path}">
+			<fileset dir="${jars.path}" />
+		</copy>
+	</target>
+	
+	<!-- INTERNAL TASKS -->
+	
+	<!--
+	Target that confirms whether the environment settings have been created.
+	If not, it will write it for you.
+	-->
+	<target name="checkSettings" description="Confirms whether environment settings have been created, or will make them for you.">
+		<if>
+			<equals arg1="${build.settings.exists}" arg2="$${build.settings.exists}" />
+			<then>
+				<echo><![CDATA[
+build.settings could not be found.
+
+Please run:
+ant writeSettings
+before continuing. ]]></echo>
+				<fail>Please see the message above</fail>
+			</then>
+		</if>
+	</target>
+	
+	<!--
+	Writes the build.settings file
+	-->
+	<target name="writeSettings" description="Writes the build.settings file">
+		<var name="settings.havechanged" unset="true" />
+		
+		<!-- create the initial settings file if it does not exist -->
+		<if>
+			<equals arg1="${build.settings.exists}" arg2="$${build.settings.exists}" />
+			<then>
+				<echo>build.settings could not be found. make it.</echo>
+				<echo file="${build.settings.path}"><![CDATA[
+# This is the settings file to say where does jEdit store things.
+# @TODO: make simple templates for mac and pc - but many involve user directories
+
+# absolute path for the jEdit HOME directory
+home.path=/Applications/jEdit.app/Contents/Java
+
+# absolute path for the jEdit SETTINGS directory
+settings.path=/Users/proth/Library/jEdit ]]></echo>
+			</then>
+		</if>
+		
+		<echo><![CDATA[
+What is the absolute path to the jEdit HOME directory
+( /Applications/jEdit.app/Contents/Java )
+]]></echo>
+		<input addproperty="home.path.new"
+		/>
+		<if>
+			<and>
+				<not><equals arg1="${home.path.new}" arg2="" /></not>
+				<not><equals arg1="${home.path.new}" arg2="$${home.path.new}" /></not>
+			</and>
+			<then>
+				<property name="settings.havechanged" value="true" />
+				<antcall target="changePropertyFileValue">
+					<param name="propertyFile.path" value="${build.settings.path}" />
+					<param name="property.name" value="home.path" />
+					<param name="property.value" value="${home.path.new}" />
+				</antcall>
+			</then>
+		</if>
+		
+		<echo><![CDATA[
+What is the absolute path to the jEdit SETTINGS directory?
+( /Users/proth/Library/jEdit )
+]]></echo>
+		<input addproperty="settings.path.new"
+		/>
+		<if>
+			<and>
+				<not><equals arg1="${settings.path.new}" arg2="" /></not>
+				<not><equals arg1="${settings.path.new}" arg2="$${settings.path.new}" /></not>
+			</and>
+			<then>
+				<property name="settings.havechanged" value="true" />
+				<antcall target="changePropertyFileValue">
+					<param name="propertyFile.path" value="${build.settings.path}" />
+					<param name="property.name" value="settings.path" />
+					<param name="property.value" value="${settings.path.new}" />
+				</antcall>
+			</then>
+		</if>
+		
+		<if>
+			<not><equals arg1="${settings.havechanged}" arg2="$${settings.havechanged}" /></not>
+			<then>
+				<echo> something changed</echo>
+				<loadfile srcfile="${build.settings.path}" property='build.settings.contents' />
+				<echo><![CDATA[
+Your new settings file:
+
+${build.settings.contents}
+]]></echo>
+			</then>
+			<else>
+				<echo> stopping</echo>
+			</else>
+		</if>
+	</target>
+	
+	
+	<!--
+	/**
+	 *  Change the property value in a specific property file
+	 *  @visibility INTERNAL
+	 *  @param propertyFile.path (String) - the path of the property file to change
+	 *  @param propertyName (String) - the name of the property
+	 *  @param propertyValue (String) - the new value of the property
+	 **/
+	-->
+	<target name="changePropertyFileValue">
+		<fail unless="propertyFile.path">propertyFile.path must be set</fail>
+		<fail unless="property.name">property.name must be set</fail>
+		<fail unless="property.value">property.value must be set</fail>
+		
+		<replaceregexp encoding="UTF-8" file="${propertyFile.path}"
+			match="^([ \t]*)${property.name}\s*=[^\n]*"
+			replace="\1${property.name}=${property.value}"
+			flags="img"
+		/>
+		
+		<var name="propertyFile.path" unset="true" />
+		<var name="property.name" unset="true" />
+		<var name="property.value" unset="true" />
+	</target>
+	
+</project>
