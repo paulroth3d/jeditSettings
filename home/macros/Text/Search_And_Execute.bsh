@@ -1,0 +1,311 @@
+/*
+ * Rem_Block_Decorators.bsh - Removes the javadoc stars on a selection of text
+ * 
+ * $Id$
+ */
+
+import java.util.LinkedList;
+import org.gjt.sp.jedit.BeanShell;
+import gnu.regexp.*;
+import javax.swing.border.*;
+
+void showDialog( View view ) {
+  
+  title = "Add or Remove Block Decorators";
+  
+  dialog = new JDialog(view, title, false);
+  content = new JPanel(new BorderLayout());
+  content.setBorder(new EmptyBorder(5, 5, 5, 5));
+  dialog.setContentPane(content);
+  
+  opPanel = new JPanel( new GridLayout(4,1) );
+  
+  p1 = new JPanel(new GridLayout(1, 2));
+  p1Label = new JLabel("Starting Guardian: ");
+  p1Field = new JTextField( "#!" );
+  p1.add(p1Label);
+  p1.add(p1Field);
+  
+  p2 = new JPanel( new GridLayout(1,2));
+  p2Label = new JLabel("End Terminator: ");
+  p2Field = new JTextField( "!#" );
+  p2.add(p2Label);
+  p2.add(p2Field);
+  
+  p3 = new JPanel( new GridLayout(1,2));
+  p3Label = new JLabel("Include Code:");
+  p3Field = new JCheckBox( null, false );
+  p3.add(p3Label);
+  p3.add(p3Field);
+  
+  p4 = new JPanel( new GridLayout(1,2));
+  p4Label = new JLabel("Keep Original:");
+  p4Field = new JCheckBox( null, true );
+  p4.add(p4Label);
+  p4.add(p4Field);
+  
+  opPanel.add( p1 );
+  opPanel.add( p2 );
+  opPanel.add( p3 );
+  opPanel.add( p4 );
+  
+  content.add(opPanel, BorderLayout.CENTER);
+  
+  buttonPanel = new JPanel(new GridLayout(1, 3));
+  buttonPanel.setBorder( new EmptyBorder(5, 0, 0, 0));
+  
+  runButton = new JButton("Run");
+  cancelButton = new JButton("Cancel");
+  
+  buttonPanel.add(runButton);
+  buttonPanel.add(cancelButton);
+  
+  content.add(buttonPanel, BorderLayout.SOUTH);
+  
+  runButton.addActionListener(this);
+  cancelButton.addActionListener(this);
+  
+  dialog.getRootPane().setDefaultButton(runButton);
+  
+  actionPerformed(e) {
+    this.dialog.dispose();
+    
+    cmd = e.getActionCommand();
+    
+    if(cmd.equals("Run")){
+		//decryptBuffer(this.pwField.getPassword());
+		start( view, this.p1Field.getText(), this.p2Field.getText(), p3Field.isSelected(), p4Field.isSelected() );
+	}
+    
+    return;
+  }
+  
+  dialog.pack();
+  dialog.setLocationRelativeTo(view);
+  dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+  dialog.setVisible(true);
+}
+
+StringChunk( _start,_end,_str ){
+	this.start=_start;
+	this.end=_end;
+	this.str=_str;
+	
+	toString(){
+		return( "<StringChunk start='" + this.start + "' end='" + this.end + "'>" + this.str + "</StringChunk>" );
+	}
+	
+	return( this );
+}
+
+StringChunker(_str,_prefix,_suffix,_hasNext,_cPos){
+	//Macros.message( view, "StringChunker!" );
+	this.ll=new LinkedList();
+	this.ns=this.namespace;
+	this.prefix=_prefix;
+	this.suffix=_suffix;
+	this.str=_str;
+	this.hasNext=_hasNext;
+	this.cPos=_cPos;
+	//Macros.message( view, "StringChunker INit!" );
+	
+	toString(){
+		return( "<StringChunker pos='" + this.cPos + "' size='" + this.ll.size() + "' prefix='" + this.prefix +
+				"' suffix='" + this.suffix + "' hasNext='" + this.hasNext + "' />" );
+	}
+	
+	build(){
+		//Macros.message( view, "building stringChunker" );
+		result=new StringBuilder();
+		
+		len=this.ll.size();
+		for( i = 0; i < len; i++ ){
+			chunk = this.ll.get(i);
+			result.append( chunk.str );
+		}
+		
+		return( result.toString() );
+	}
+	
+	findNext(includeCode){
+		//result=null;
+		//Macros.message( view, "findNext" );
+		startPos=this.str.indexOf( this.prefix, this.cPos );
+		Log.log( Log.DEBUG, BeanShell.class, "startPos:"+startPos );
+		if( startPos < 0 ){
+			resultChunker=StringChunker(this.str,this.prefix,this.suffix,false,this.cPos);
+			resultChunker.ll=this.ll;
+			resultChunker.ns=this.ns;
+			return( resultChunker );
+		}
+		
+		if( includeCode ){
+			result2=this.str.substring( this.cPos, this.startPos+this.prefix.length() );
+		} else {
+			result2=this.str.substring( this.cPos, this.startPos );
+		}
+		startPos+=this.prefix.length();
+		
+		
+		chunk1=StringChunk(this.cPos,this.startPos, result2 );
+		//Macros.message( view, "chunk1:" + chunk1.toString() );
+		
+		//Macros.message( view, "cPos:"+cPos );
+		this.cPos = this.startPos;
+		//Macros.message( view, "cPos:" + cPos );
+		endPos=this.str.indexOf( this.suffix, this.cPos );
+		//Macros.message( view, "endPos:" + endPos );
+		if( endPos < 0 ){
+			resultChunker=StringChunker(this.str,this.prefix,this.suffix,false,this.cPos);
+			resultChunker.ll=this.ll;
+			resultChunker.ns=this.ns;
+			return( resultChunker );
+		}
+		
+		result3 = this.str.substring( startPos, endPos );
+		evalResult=evaluateString(result3,this.ns);
+		Log.log( Log.DEBUG, BeanShell.class, "eval[" + result3 + "]:" + evalResult );
+		//Macros.message( view, "evalResult:" + evalResult );
+		
+		if( includeCode ){
+			result4= "" + evalResult + ';' + result3;
+		} else {
+			result4=evalResult;
+		}
+		chunk2=StringChunk(startPos,endPos, result4 );
+		//Macros.message( view, "chunk2:" + chunk2.toString() );
+		
+		this.cPos = this.endPos;
+		if( includeCode ){
+		} else {
+			this.cPos += this.suffix.length();
+		}
+		
+		//Macros.message( view, "finalPos:"+ this.cPos );
+		
+		this.ll.add( chunk1 );
+		this.ll.add( chunk2 );
+		
+		resultChunker=StringChunker(this.str,this.prefix,this.suffix,true,this.cPos);
+		resultChunker.ll=this.ll;
+		resultChunker.ns=this.ns;
+		//Macros.message( view, "resultChunker:" + resultChunker.toString() );
+		return( resultChunker );
+	}
+	
+	tail(){
+		//Macros.message( view, "tail cpos:" + this.cPos );
+		
+		len=this.str.length();
+		
+		//Macros.message( view, "cPos:" + this.cPos + ", len:" + len );
+		result=this.str.substring( this.cPos, len );
+		//Macros.message( view, "result:" + result );
+		chunk=StringChunk( this.cPos,len, result );
+		//Macros.message( view, "tailChunk:" + chunk.toString() );
+		this.ll.add(chunk);
+		
+		resultChunker=StringChunker(this.str,this.prefix,this.suffix,false,this.cPos);
+		resultChunker.ll=this.ll;
+		resultChunker.ns=this.ns;
+		return( resultChunker );
+	}
+	
+	return(this);
+}
+
+void start( View view, String pre, String post, Boolean includeCode, Boolean keepOriginal ){
+	//Macros.message( view, "pre:" + pre + ", post:" + post );
+	this.view = view;
+	
+	Selection[] selections = textArea.getSelection();
+	Selection select;
+	String selected;
+	String lineSep = buffer.getProperty( buffer.LINESEP );
+	
+	if( selections.length < 1 ){
+		Macros.error( view, "no selections made" );
+		return;
+	}
+	
+	for( i = 0; i < selections.length; i++ ){
+		Log.log( Log.DEBUG, BeanShell.class, "evaluating selection[" + (i+1) + "/" + selections.length + "]" );
+		//Macros.message( view, "evaluating selection [" + (i+1) + "/" + selections.length + "]" );
+		select=selections[i];
+		select=expandSelection( select, keepOriginal );
+		selectionText=combineSelection( select );
+		chunker=chunkup( selectionText, pre, post, includeCode );
+		//Macros.message( view, "chunker.chunkup:" + chunker.toString() );
+		result=chunker.build();
+		//result=result.replaceAll(";;",";");
+		//Macros.message( view, result );
+		
+		if( keepOriginal ){
+			result = "\n" + selectionText + "\n--\n" + result + "\n";
+		}
+		textArea.setSelectedText( select, result );
+	}
+}
+
+Selection expandSelection( select, boolean includeOriginal ){
+	if( includeOriginal ){
+		int start = textArea.getLineStartOffset( select.getStartLine() );
+		int end = textArea.getLineEndOffset( select.getEndLine() );
+		int max = textArea.getBufferLength();
+		if( end > max ) end = max;
+		//Log.log( Log.DEBUG, BeanShell.class, "start[" + start + "," + end + "," + end + "]" );
+		select = new Selection.Range( start, end );
+		textArea.addToSelection( select );
+	}
+	return( select );
+}
+
+String combineSelection( select ){
+	txt=textArea.getSelectedText(select);
+	/*
+	start=select.getStart();
+	end=select.getEnd();
+	txt=buffer.getText( start, end-start );
+	//Macros.message( view, txt );
+	*/
+	return( txt );
+}
+
+Object chunkup( str,prefix,suffix,includeCode ){
+	//Macros.message( view, "evaluating[" + str + "]" );
+	
+	//Macros.message( view, "pre:" + prefix + ", suffix=" + suffix );
+	chunker=StringChunker( str, prefix, suffix,true,0 );
+	//Macros.message( view, "chunker1:" + chunker.toString() );
+	for( i=0; i < 1000000 && chunker.hasNext; i++ ){
+		chunker=chunker.findNext(includeCode);
+	}
+	//Macros.message( view, "findNext called" );
+	if( i == 1000000 ){
+		Macros.error( view, "maximum number of executions reached:1000000" );
+	}
+	//Macros.message( view, "chunker2:" + chunker.toString() );
+	chunker=chunker.tail();
+	
+	return( chunker );
+}
+
+Object evaluateString( str,ns ){
+	//Macros.message( view, "ns:" + ns + ", evaluateString:" + str );
+	Log.log( Log.DEBUG, BeanShell.class, "eval[" + str + "]" );
+	//Macros.message( view, str );
+	try {
+		result=eval( str );
+	} catch( e ){
+		Macros.message( view, "Error occurred:" + e.toString() );
+	}
+	//result=BeanShell._eval(view,BeanShell.getNameSpace(), str );
+	//Macros.message( view, "after result" );
+	return( result );
+}
+
+if(buffer.isReadOnly()){
+	Macros.error( view, "Buffer is read-only." );
+} else {
+	showDialog(view);
+}

@@ -1,0 +1,104 @@
+/**
+ *  Creates a named fold
+**/
+
+import gnu.regexp.*;
+import javax.swing.border.*;
+
+void showDialog( View view ) {
+  
+  title = "Add a named fold";
+  
+  dialog = new JDialog(view, title, false);
+  content = new JPanel(new BorderLayout());
+  content.setBorder(new EmptyBorder(5, 5, 5, 5));
+  dialog.setContentPane(content);
+  
+  opPanel = new JPanel( new GridLayout(1,1) );
+  
+  prPanel = new JPanel(new GridLayout(1, 2));
+  prLabel = new JLabel("Name: ");
+  prField = new JTextField( "" );
+  prPanel.add(prLabel);
+  prPanel.add(prField);
+    
+  opPanel.add( prPanel );
+  
+  content.add(opPanel, BorderLayout.CENTER);
+  
+  buttonPanel = new JPanel(new GridLayout(1, 2));
+  buttonPanel.setBorder( new EmptyBorder(5, 0, 0, 0));
+  
+  addButton = new JButton("Add");
+  cancelButton = new JButton("Cancel");
+  
+  buttonPanel.add(addButton);
+  buttonPanel.add(cancelButton);
+  
+  content.add(buttonPanel, BorderLayout.SOUTH);
+  
+  addButton.addActionListener(this);
+  cancelButton.addActionListener(this);
+  
+  dialog.getRootPane().setDefaultButton(addButton);
+  
+  actionPerformed(e) {
+    this.dialog.dispose();
+    
+    cmd = e.getActionCommand();
+    
+    if(cmd.equals("Add")){
+		//decryptBuffer(this.pwField.getPassword());
+		start( view, this.prField.getText() );
+    }
+    
+    return;
+  }
+  
+  dialog.pack();
+  dialog.setLocationRelativeTo(view);
+  dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+  dialog.setVisible(true);
+}
+
+void start( View view, String blockName ){
+	//Macros.message( view, "The name of the block is:" + blockName );
+	
+	this.view = view;
+	
+	Selection[] selections = textArea.getSelection();
+	Selection select;
+	String selectTxt;
+	StringBuilder selResult;
+	
+	int startLine;
+	int endLine;
+	String lineText;
+	
+	if( selections == null || selections.length < 1 ){
+		Macros.error( view, "No lines were selected" );
+		return( null );
+	}
+	
+	for( int j = 0; j < selections.length; j++ ){
+		select = selections[j];
+		startLine = select.getStartLine();
+		endLine = select.getEndLine()+1;
+		
+		selResult = new StringBuilder( "\n{{{ " + blockName + "\n" );
+		
+		for( int i = startLine; i < endLine; i++ ){
+			selResult.append( buffer.getLineText(i) + "\n" );
+		}
+		
+		selResult.append( "}}}\n" );
+		
+		textArea.setSelectedText( select, selResult.toString() );
+	}
+}
+
+if(buffer.isReadOnly()){
+	Macros.error( view, "Buffer is read-only." );
+} else {
+	showDialog(view);
+}

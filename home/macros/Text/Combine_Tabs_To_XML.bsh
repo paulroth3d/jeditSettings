@@ -1,0 +1,63 @@
+// This is a temporary macro. First, check over the
+// commands to make sure this is what you intended.
+// Then, to run this macro, switch to the buffer
+// where you would like to execute it and press C+m C+p.
+SearchAndReplace.setSearchString("^");
+SearchAndReplace.setReplaceString("†");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setWholeWord(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+/*SearchAndReplace.setSearchString("$");
+SearchAndReplace.setReplaceString("†");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setWholeWord(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+*/
+
+SearchAndReplace.setSearchString("\\t");
+SearchAndReplace.setReplaceString("‡");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setWholeWord(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+for( int i = 0; i < 100; i++ ){
+
+SearchAndReplace.setSearchString("^†([^\\n†‡]*)‡([^\\n†‡]*\\n[^†‡]*)†\\1‡");
+SearchAndReplace.setReplaceString("†$1‡$2α");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setWholeWord(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+}
+
+SearchAndReplace.setSearchString("^†([^\\\\n†‡]*)‡.*");
+SearchAndReplace.setReplaceString("\"</dataCategory>\\n<dataCategory><name>\" + \"TOKEN_\" + _1.replaceAll( \"[ \\\\t]+\", \"_\" ) + \"</name><label>\" + _1 + \"</label>\"");
+SearchAndReplace.setBeanShellReplace(true);
+SearchAndReplace.setWholeWord(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("^α(.*)");
+SearchAndReplace.setReplaceString("\"\\t<dataCategory><name>\" + \"TOKEN_\" + _1.replaceAll( \"[ \\\\t]+\", \"_\" ) + \"</name><label>\" + _1 + \"</label></dataCategory>\"");
+SearchAndReplace.setBeanShellReplace(true);
+SearchAndReplace.setWholeWord(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+

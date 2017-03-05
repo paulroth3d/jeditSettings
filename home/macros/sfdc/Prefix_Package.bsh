@@ -1,0 +1,157 @@
+/**
+ *  Beanshell to prefix a package with the package type before all members
+ **/
+ 
+import java.util.HashMap;
+
+//-- remove double spaces
+SearchAndReplace.setSearchString("\\n([ \\t]*\\n)+");
+SearchAndReplace.setReplaceString("\\n");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+ 
+//-- add dagger surrounding the name of the type
+SearchAndReplace.setSearchString("<name>([^\\n<]+)</name>");
+SearchAndReplace.setReplaceString("<name>†$1†</name>");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+//-- add ddaggers surrounding the contnet (avoiding bleeding)
+SearchAndReplace.setSearchString("<types>");
+SearchAndReplace.setReplaceString("$0‡");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+SearchAndReplace.setSearchString("</types>");
+SearchAndReplace.setReplaceString("‡$0");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+//-- add the prefix to the next line
+for( int i = 0; i < 200; i++ ){
+	SearchAndReplace.setSearchString("(<members>)([^\\n‡†]+\\n[^\\n‡†]*)†([^\\n‡†]+)†");
+	SearchAndReplace.setReplaceString("$1†$3†$2†$3†");
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+	SearchAndReplace.replaceAll(view);
+}
+
+//-- remove all non members
+SearchAndReplace.setSearchString("^[^\\n†]+[\\n$]");
+SearchAndReplace.setReplaceString("");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("^[ \\t]*<name>[^\\n]+\\n");
+SearchAndReplace.setReplaceString("");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+//-- remove member tags
+SearchAndReplace.setSearchString("^[ \\t]*<members>");
+SearchAndReplace.setReplaceString("");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("</members>[ \t]*$");
+SearchAndReplace.setReplaceString("");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("^</Package>$");
+SearchAndReplace.setReplaceString("");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+//-- translate between eclipse and ant
+HashMap map = new HashMap();
+map.put("ApexClass", "classes" );
+map.put("ApexComponent", "components" );
+map.put("ApexPage", "pages" );
+map.put("ApexTrigger", "triggers" );
+map.put("CustomApplication", "applications" );
+map.put("CustomField", "" );
+map.put("CustomLabels", "labels" );
+map.put("CustomObject", "objects" );
+map.put("CustomTab", "tabs" );
+map.put("Dashboard", "dashboards" );
+map.put("Document", "documents" );
+map.put("EmailTemplate", "email" );
+map.put("HomePageComponent", "homepagecomponents" );
+map.put("HomePageLayout", "homepagelayouts" );
+map.put("Layout", "layouts" );
+map.put("Letterhead", "letterhead" );
+map.put("Portal", "portals" );
+map.put("Profile", "profiles" );
+map.put("RecordType", "" );
+map.put("RemoteSiteSetting", "remotesitesettings" );
+map.put("Report", "reports" );
+map.put("ReportType", "reporttypes" );
+map.put("StaticResource", "staticresources" );
+map.put("Workflow", "workflows" );
+
+
+Iterator itr = map.keySet().iterator();
+String mapType=null;
+String mapResult = null;
+String searchString = null;
+String replaceString = null;
+while( itr.hasNext() ){
+	mapType = (String)itr.next();
+	mapResult = (String)map.get( mapType );
+	Log.log( Log.DEBUG, BeanShell.class, mapType );
+	
+	searchString = "†" + mapType + "†([^\\n]+)$";
+	if( mapResult == null || mapResult.length() == 0 ){
+		Log.log( Log.DEBUG, BeanShell.class, "Nada" );
+		replaceString = "";
+	} else {
+		Log.log( Log.DEBUG, BeanShell.class, mapResult );
+		replaceString = mapResult + "/$1";
+	}
+	
+	SearchAndReplace.setSearchString( searchString );
+	SearchAndReplace.setReplaceString( replaceString );
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+	SearchAndReplace.replaceAll(view);
+}
+
+//-- remove multiple empty lines
+SearchAndReplace.setSearchString("\\n+");
+SearchAndReplace.setReplaceString("\\n");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);

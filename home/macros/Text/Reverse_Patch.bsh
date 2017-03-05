@@ -1,0 +1,53 @@
+/**
+ * Reverse_Patch.bsh - Reverses a patch file
+ * 
+ * $Id$
+ */
+
+import javax.swing.border.*;
+import gnu.regexp.*;
+
+void start( View view ){
+	//Macros.message( view, "starting now" );
+	this.view = view;
+	
+	//get whole buffer text
+	JEditTextArea area = view.getTextArea();
+	String bufferText = area.getText( 0, area.getBufferLength() );
+	
+	newBuffer = jEdit.newFile( view );
+	area = view.getTextArea();
+	
+	String regex = null;
+	RE re = null;
+	REMatch[] matches;
+	REMatch match;
+	
+	StringBuilder result = new StringBuilder();
+	
+	try {
+		bufferText = replaceAll( bufferText, "(={20,}\\n[-]{3}\\s+)([^\n]+)(\n[+]{3}\\s+)([^\n]+)", "$1$4$3$2" );
+		
+		bufferText = replaceAll( bufferText, "\n[-]", "\n#" );
+		bufferText = replaceAll( bufferText, "\n[+]", "\n-" );
+		bufferText = replaceAll( bufferText, "\n#", "\n+" );
+		
+		bufferText = replaceAll( bufferText, "\n[-][+][+]", "\n+++" );
+		bufferText = replaceAll( bufferText, "\n[+][-][-]", "\n---" );
+		
+		bufferText = replaceAll( bufferText, "\\@\\@ [-](\\d+),(\\d+) [+](\\d+),(\\d+) \\@\\@", "@@ -$3,$4 +$1,$2 @@" );
+	} catch( REException err ){
+		Macros.error( view, "Error occurred with regex:" + err );
+	}
+	
+	result.append( bufferText );
+	area.setText( result.toString() );
+	Macros.message( view, "Done" );
+}
+
+String replaceAll( String target, String match, String replace ){
+	RE re = new RE( match );
+	return( re.substituteAll( target, replace ) );
+}
+
+start( view );    //to not show dialog, uncomment this and comment prev line

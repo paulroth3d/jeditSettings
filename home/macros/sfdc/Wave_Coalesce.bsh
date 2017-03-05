@@ -1,0 +1,25 @@
+/**
+ *  Adds a coalesce around the selection.
+**/
+
+void start( View view ){
+	Selection[] selections = textArea.getSelection();
+	
+	if( selections == null || selections.length < 1 ){
+		Macros.error( view, "No text was selected" );
+		return;
+	}
+	
+	for( int i = 0; i < selections.length; i++ ){
+		select = selections[i];
+		String selectText = textArea.getSelectedText( select );
+		String resultText = "coalesce(" + selectText + ",0)";
+		textArea.setSelectedText( select, resultText );
+	}
+}
+
+if( buffer.isReadOnly() ){
+	Macros.error( view, "Buffer is read only and cannot be modified" );
+} else {
+	start( view );
+}

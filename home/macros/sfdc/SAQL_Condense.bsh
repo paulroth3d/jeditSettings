@@ -1,0 +1,22 @@
+//condenses down a SAQL statement for a dashboard step.
+SearchAndReplace.setSearchString("([^\\\\])\"");
+SearchAndReplace.setReplaceString("$1\\\\\"");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setWholeWord(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.replace(view);
+SearchAndReplace.setSearchString("\\n");
+SearchAndReplace.setReplaceString("\\\\n ");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setWholeWord(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.replace(view);
+SearchAndReplace.setSearchString("\\t");
+SearchAndReplace.setReplaceString("\\\\t ");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setWholeWord(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.replace(view);

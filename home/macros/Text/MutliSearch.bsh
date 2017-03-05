@@ -1,0 +1,132 @@
+/*
+ * Rem_Block_Decorators.bsh - Removes the javadoc stars on a selection of text
+ * 
+ * $Id$
+ */
+
+import gnu.regexp.*;
+import javax.swing.border.*;
+
+void showDialog( View view ) {
+  
+  title = "Add or Remove Block Decorators";
+  
+  dialog = new JDialog(view, title, false);
+  content = new JPanel(new BorderLayout());
+  content.setBorder(new EmptyBorder(5, 5, 5, 5));
+  dialog.setContentPane(content);
+  
+  opPanel = new JPanel( new GridLayout(1,1) );
+  
+  prPanel = new JPanel(new GridLayout(1, 2));
+  prLabel = new JLabel("Lines to search");
+  linesToSearch = new JTextArea( 5,20 );
+  prPanel.add(prLabel);
+  prPanel.add(linesToSearch);
+  
+  opPanel.add( prPanel );
+  
+  content.add(opPanel, BorderLayout.CENTER);
+  
+  buttonPanel = new JPanel(new GridLayout(1, 2));
+  buttonPanel.setBorder( new EmptyBorder(5, 0, 0, 0));
+  
+  runButton = new JButton("Run");
+  cancelButton = new JButton("Cancel");
+  
+  buttonPanel.add(runButton);
+  buttonPanel.add(cancelButton);
+  
+  content.add(buttonPanel, BorderLayout.SOUTH);
+  
+  runButton.addActionListener(this);
+  cancelButton.addActionListener(this);
+  
+  dialog.getRootPane().setDefaultButton(runButton);
+  
+  actionPerformed(e) {
+    this.dialog.dispose();
+    
+    cmd = e.getActionCommand();
+    
+    if(cmd.equals("Run")){
+		//decryptBuffer(this.pwField.getPassword());
+		start( view, this.linesToSearch.getText() );
+	}
+    
+    return;
+  }
+  
+  dialog.pack();
+  dialog.setLocationRelativeTo(view);
+  dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+  dialog.setVisible(true);
+}
+
+void start( View view, String linesToSearch ){
+	//Macros.message( view, "lines to search:" + linesToSearch );
+	
+	String[] lines = linesToSearch.split( "\\r?\\n" );
+	if( lines == null || lines.length < 1 ){
+		Macros.error( view, "No Lines Selected" );
+		return;
+	}
+	String line = null;
+	for( int i = 0; i < lines.length; i++ ){
+		line = lines[i];
+		if( line == null ){
+			continue;
+		}
+		line = line.trim();
+		//Macros.message( view, "[" + i + "]:" + line );
+		SearchAndReplace.setSearchString(line);
+		SearchAndReplace.setAutoWrapAround(false);
+		SearchAndReplace.setReverseSearch(false);
+		SearchAndReplace.setWholeWord(false);
+		SearchAndReplace.setIgnoreCase(true);
+		SearchAndReplace.setRegexp(true);
+		SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+		SearchAndReplace.hyperSearch(view,false);
+	}
+}
+/*
+void start2( View view ){
+	//Macros.message( view, "starting now" );
+	this.view = view;
+	
+	JEditBuffer buffer = textArea.getBuffer();
+	Selection[] selections = textArea.getSelection();
+	Selection select;
+	
+	if( selections == null || selections.length < 1 ){
+		Macros.error( view, "No Lines Selected" );
+		return;
+	}
+	
+	for( int j = 0; j < selections.length; j++ ){
+		buildSelection( selections, j );
+	}
+}
+
+void buildSelection( Selection[] selections, int index ){
+	Selection s = selections[index];
+	
+	if( selections.length == 1 ){
+	} else {
+		result.append( "Selection[" + index + "]:\n\n" );
+	}
+	
+	int startLine = s.getStartLine();
+	int endLine = s.getEndLine();
+	String lineText;
+	//Macros.message( view, "startLine[" + startLine + "] endLine[" + endLine + "]" );
+	
+	for( int i = startLine; i < endLine; i++ ){
+		lineText = buffer.getLineText( i ).trim();
+		Macros.message( view, "[" + i + "]:" + lineText );
+	}
+}
+*/
+
+//start( view );
+showDialog( view );

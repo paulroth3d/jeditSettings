@@ -1,0 +1,15 @@
+//expands a saql that was condensed.
+SearchAndReplace.setSearchString("\\\\n ");
+SearchAndReplace.setReplaceString("\\n");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setWholeWord(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.replace(view);
+SearchAndReplace.setSearchString("\\\\t ");
+SearchAndReplace.setReplaceString("\\t");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setWholeWord(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.replace(view);

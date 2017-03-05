@@ -1,0 +1,91 @@
+// This is a temporary macro. First, check over the
+// commands to make sure this is what you intended.
+// Then, to run this macro, switch to the buffer
+// where you would like to execute it and press C+m C+p.
+
+
+/*
+ * Rem_Block_Decorators.bsh - Removes the javadoc stars on a selection of text
+ * 
+ * $Id$
+ */
+
+import gnu.regexp.*;
+import javax.swing.border.*;
+
+void showDialog( View view ) {
+  
+  title = "Remove profile element name";
+  
+  dialog = new JDialog(view, title, false);
+  content = new JPanel(new BorderLayout());
+  content.setBorder(new EmptyBorder(5, 5, 5, 5));
+  dialog.setContentPane(content);
+  
+  opPanel = new JPanel( new GridLayout(3,1) );
+  
+  prPanel = new JPanel(new GridLayout(1, 2));
+  prLabel = new JLabel("Element Name: ");
+  prField = new JTextField( "" );
+  prPanel.add(prLabel);
+  prPanel.add(prField);
+  
+  opPanel.add( prPanel );
+  
+  content.add(opPanel, BorderLayout.CENTER);
+  
+  buttonPanel = new JPanel(new GridLayout(1, 1));
+  buttonPanel.setBorder( new EmptyBorder(1, 0, 0, 0));
+  
+  addButton = new JButton("Run");
+  cancelButton = new JButton("Cancel");
+  
+  buttonPanel.add(addButton);
+  buttonPanel.add(cancelButton);
+  
+  content.add(buttonPanel, BorderLayout.SOUTH);
+  
+  addButton.addActionListener(this);
+  cancelButton.addActionListener(this);
+  
+  dialog.getRootPane().setDefaultButton(addButton);
+  
+  actionPerformed(e) {
+    this.dialog.dispose();
+    
+    cmd = e.getActionCommand();
+    
+    if(cmd.equals("Run")){
+		//decryptBuffer(this.pwField.getPassword());
+		removeType( view, this.prField.getText() );
+    }
+    
+    return;
+  }
+  
+  dialog.pack();
+  dialog.setLocationRelativeTo(view);
+  dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+  dialog.setVisible(true);
+}
+
+void removeType( View view, String elementName ){
+	SearchAndReplace.setSearchString("</" + elementName + ">");
+	SearchAndReplace.setReplaceString("‡$0");
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setWholeWord(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new DirectoryListSet("/Users/proth/Documents/work/sfdc/projects/ffn/dev/sfdc/src/permissionsets","*.*",true));
+	SearchAndReplace.replaceAll(view);
+	SearchAndReplace.setSearchString("<" + elementName + ">[^‡]+‡</" + elementName + ">\\s+");
+	SearchAndReplace.setReplaceString("");
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setWholeWord(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new DirectoryListSet("/Users/proth/Documents/work/sfdc/projects/ffn/dev/sfdc/src/permissionsets","*.*",true));
+	SearchAndReplace.replaceAll(view);
+}
+
+showDialog(view);

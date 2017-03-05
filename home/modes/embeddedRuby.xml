@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<!DOCTYPE MODE SYSTEM "xmode.dtd">
+<MODE>
+	<PROPS>
+		<PROPERTY NAME="commentStart" VALUE="&lt;!--" />
+		<PROPERTY NAME="commentEnd" VALUE="--&gt;" />
+		
+		<PROPERTY NAME="indentOpenBrackets" VALUE="{" />
+        <PROPERTY NAME="indentCloseBrackets" VALUE="}" />
+        <PROPERTY NAME="lineUpClosingBracket" VALUE="true" />
+		<!-- <PROPERTY NAME="electricKeys" VALUE="abcdefghijklmnopqrstuvwxyz" /> -->
+	</PROPS>
+	
+	<RULES IGNORE_CASE='TRUE' ESCAPE="\" HIGHLIGHT_DIGITS="TRUE">
+		<SPAN DELEGATE='ruby::MAIN'>
+			<BEGIN>&lt;%</BEGIN>
+			<END>%&gt;</END>
+		</SPAN>
+		
+		<!-- treat everything has HTML UNTIL ruby comes in to play -->
+		<!-- stylesheet -->
+		<SPAN TYPE="MARKUP" DELEGATE="CSS">
+			<BEGIN>&lt;STYLE</BEGIN>
+			<END>&lt;/STYLE&gt;</END>
+		</SPAN>
+		
+		<!-- JavaScript -->
+		<SPAN TYPE="MARKUP" DELEGATE="JAVASCRIPT">
+			<BEGIN>&lt;SCRIPT</BEGIN>
+			<END>&lt;/SCRIPT&gt;</END>
+		</SPAN>
+		
+		<!-- markup tags -->
+		<SPAN TYPE="MARKUP" DELEGATE="TAGS">
+			<BEGIN>&lt;</BEGIN>
+			<END>&gt;</END>
+		</SPAN>
+	</RULES>
+	
+	<!-- html rules -->
+	<RULES SET="CSS" DEFAULT="MARKUP">
+		<SEQ TYPE="MARKUP" DELEGATE="css::MAIN">&gt;</SEQ>
+	</RULES>
+	
+	<RULES SET="JAVASCRIPT" DEFAULT="MARKUP" IGNORE_CASE="TRUE">
+		
+		<SEQ TYPE="MARKUP" DELEGATE="javascript::MAIN">&gt;</SEQ>
+		
+		<!-- handle <SCRIPT SRC="..."> properly -->
+		<SEQ TYPE="MARKUP" DELEGATE="BACK_TO_HTML">SRC=</SEQ>
+
+		<!-- Inline CSS -->
+ 		<SPAN_REGEXP TYPE="MARKUP" DELEGATE="css::PROPERTIES" HASH_CHAR="style">
+			<BEGIN>style\s*=\s*(["'])</BEGIN>
+			<END>$1</END>
+		</SPAN_REGEXP>
+	</RULES>
+	
+	<!-- ESCAPE is not exactly right but it is needed to correctly
+	 handle JavaScript in on* parameters.
+		 NOTE: ESCAPE moved from RULE to SPANs! -->
+	<RULES SET="TAGS" DEFAULT="COMMENT1">
+		<!-- ESCAPE TO RUBY EVEN IN TAGS -->
+		<SPAN DELEGATE='ruby::MAIN'>
+			<BEGIN>&lt;%</BEGIN>
+			<END>%&gt;</END>
+		</SPAN>
+		
+		<!-- NOTE: no ESCAPE for quotes, at least for attributes; e.g onclick="alert(\"foo\");" is invalid! -->
+		<SPAN_REGEXP DELGATE="POSSIBLE_RUBY_LITERAL1">
+			<BEGIN>"</BEGIN>
+			<END>"</END>
+		</SPAN_REGEXP>
+		<!--
+		<SPAN DELEGATE="POSSIBLE_RUBY_LITERAL1">
+			<BEGIN>"</BEGIN>
+			<END>"</END>
+		</SPAN>
+		-->
+		<SPAN DELEGATE="POSSIBLE_RUBY_LITERAL1">
+			<BEGIN>'</BEGIN>
+			<END>'</END>
+		</SPAN>
+		
+		<IMPORT DELEGATE="html::TAGS"/>
+	</RULES>
+	
+	<!-- RUBY RULES -->
+	<RULES DEFAULT='LITERAL1' SET='POSSIBLE_RUBY_LITERAL1'>
+		<SPAN DELEGATE='ruby::MAIN'>
+			<BEGIN>&lt;%</BEGIN>
+			<END>%&gt;</END>
+		</SPAN>
+	</RULES>
+	
+	<RULES SET='POSSIBLE_RUBY'>
+		<SPAN DELEGATE='ruby::MAIN'>
+			<BEGIN>&lt;%</BEGIN>
+			<END>%&gt;</END>
+		</SPAN>
+	</RULES>
+</MODE>

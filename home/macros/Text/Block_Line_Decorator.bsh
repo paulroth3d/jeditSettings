@@ -1,0 +1,17 @@
+
+void start( View view ){
+	this.view = view;
+	
+	JEditBuffer buffer = textArea.getBuffer();
+	textArea.selectLine();
+	
+	Selection[] selections = textArea.getSelection();
+	Selection select = selections[0];
+	String lineText = textArea.getSelectedText( select );
+	
+	String lineText2 = lineText.replaceAll( "^(\\s+)(.+)", "$1/** $2 **/" );
+	
+	textArea.setSelectedText( select, lineText2 );
+}
+
+start( view );

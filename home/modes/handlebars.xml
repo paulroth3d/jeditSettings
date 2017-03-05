@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE MODE SYSTEM "xmode.dtd">
+
+<MODE>
+	<PROPS>
+		<PROPERTY NAME="commentStart" VALUE="{{!" />
+		<PROPERTY NAME="commentEnd" VALUE="}}" />
+	</PROPS>
+
+	
+	<RULES IGNORE_CASE="TRUE">
+		<SPAN TYPE="COMMENT1" ESCAPE="--">
+			<BEGIN>{{!</BEGIN>
+			<END>}}</END>
+		</SPAN>
+		
+		<SPAN TYPE="MARKUP" IGNORE_CASE="TRUE" DELEGATE="HBS">
+			<BEGIN>{{</BEGIN>
+			<END>}}</END>
+		</SPAN>
+		
+		<IMPORT DELEGATE="html::MAIN" />
+		<IMPORT DELEGATE="html::TAGS" />
+	</RULES>
+	
+	<RULES IGNORE_CASE="TRUE" SET="HBS">
+		<SEQ TYPE="KEYWORD3">#</SEQ>
+		
+		<SPAN TYPE="LITERAL1" ESCAPE="\">
+			<BEGIN>'</BEGIN>
+			<END>'</END>
+		</SPAN>
+		<SPAN TYPE="LITERAL1" ESCAPE="\">
+			<BEGIN>"</BEGIN>
+			<END>"</END>
+		</SPAN>
+		
+		<KEYWORDS>
+			<KEYWORD1>each</KEYWORD1>
+			<KEYWORD1>with</KEYWORD1>
+			<KEYWORD1>if</KEYWORD1>
+			<KEYWORD1>else</KEYWORD1>
+			<KEYWORD1>unless</KEYWORD1>
+			<KEYWORD1>list</KEYWORD1>
+			<KEYWORD2>@index</KEYWORD2>
+			<KEYWORD2>@key</KEYWORD2>
+		</KEYWORDS>
+	</RULES>
+</MODE>

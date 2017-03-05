@@ -1,0 +1,105 @@
+/**- converts the diff page to a package.xml -**/
+
+import java.util.HashMap;
+
+SearchAndReplace.setSearchString("^([^\\n/]+)(/[^\\n]+\\n\\1)*[^\\n]+");
+SearchAndReplace.setReplaceString("$0\n\t<name>$1</name>\n</types>\n<types>");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+//-- remove package groups
+SearchAndReplace.setSearchString("^\\w[^\\n/]+/");
+SearchAndReplace.setReplaceString("$0†");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("^[^\\n†]+†");
+SearchAndReplace.setReplaceString("\t<members>");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+//-- add in the closing
+SearchAndReplace.setSearchString("<members>[^\n]+");
+SearchAndReplace.setReplaceString("$0</members>");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+//-- add the start
+textArea.goToBufferStart(false);
+textArea.setSelectedText("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Package xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n<types>\n");
+//-- add the end
+textArea.goToBufferEnd(false);
+textArea.setSelectedText("</Package>");
+
+//-- remove ending Packages
+SearchAndReplace.setSearchString("<types>\\s+</Package>");
+SearchAndReplace.setReplaceString("</Package>");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+//-- translate the types from file to package format
+
+//-- translate between eclipse and ant
+HashMap map = new HashMap();
+map.put("ApexClass", "classes" );
+map.put("ApexComponent", "components" );
+map.put("ApexPage", "pages" );
+map.put("ApexTrigger", "triggers" );
+map.put("CustomApplication", "applications" );
+map.put("CustomField", "" );
+map.put("CustomLabels", "labels" );
+map.put("CustomObject", "objects" );
+map.put("CustomTab", "tabs" );
+map.put("Dashboard", "dashboards" );
+map.put("Document", "documents" );
+map.put("EmailTemplate", "email" );
+map.put("HomePageComponent", "homepagecomponents" );
+map.put("HomePageLayout", "homepagelayouts" );
+map.put("Layout", "layouts" );
+map.put("Letterhead", "letterhead" );
+map.put("Portal", "portals" );
+map.put("Profile", "profiles" );
+map.put("RecordType", "" );
+map.put("RemoteSiteSetting", "remotesitesettings" );
+map.put("Report", "reports" );
+map.put("ReportType", "reporttypes" );
+map.put("StaticResource", "staticresources" );
+map.put("Workflow", "workflows" );
+
+Iterator itr = map.keySet().iterator();
+String packageType=null;
+String fileType = null;
+String searchString = null;
+String replaceString = null;
+while( itr.hasNext() ){
+	packageType = (String)itr.next();
+	fileType = (String)map.get( packageType );
+	Log.log( Log.DEBUG, BeanShell.class, "packageType[" +packageType+"] fileType[" +fileType+ "]" );
+	
+	searchString = "<name>" + fileType + "</name>";
+	replaceString = "<name>" + packageType + "</name>";
+	
+	SearchAndReplace.setSearchString( searchString );
+	SearchAndReplace.setReplaceString( replaceString );
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+	SearchAndReplace.replaceAll(view);
+}
+

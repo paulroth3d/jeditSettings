@@ -1,0 +1,218 @@
+/**
+ * tidybraces.bsh - Cleans up the spacing of lines only by their relation to
+ * curly braces.
+ * 
+ * $Id$
+ */
+
+import gnu.regexp.*;
+import javax.swing.border.*;
+import javax.swing.*;
+
+void showDialog( View view ){
+	title = "Write WordWrap Into Text";
+	
+	dialog = new JDialog( view, title, false ); //defines the parent, title, and whether other dialogs can be active at the same time
+	content = new JPanel( new BorderLayout() );
+	content.setBorder( new EmptyBorder( 5,5,5,5 ) );
+	dialog.setContentPane( content );
+	
+	formPanel = new JPanel( new GridLayout( 1,1 )); //defines the form as having only one input
+	
+	op1Panel = new JPanel( new GridLayout( 1,2 )); //defines the panel with a label and a field
+	//op1Label = new JLabel( ":" );
+	op1Field = new JCheckBox("Leave alone at level 0");
+	//op1Panel.add( op1Label );
+	op1Panel.add( op1Field );
+	
+	formPanel.add( op1Panel ); //binds the panel with the input to the form
+	
+	content.add( formPanel, BorderLayout.CENTER ); //binds the form to the dialog, in the center
+	
+	buttonPanel = new JPanel(new GridLayout(1, 2));
+	buttonPanel.setBorder( new EmptyBorder(5, 0, 0, 0));
+	
+	runButton = new JButton( "Run" );//defines the text on the button to Run
+	cancelButton = new JButton( "Cancel" ); // ditto for Cancel
+	
+	buttonPanel.add( runButton );
+	buttonPanel.add( cancelButton );
+	
+	content.add( buttonPanel, BorderLayout.SOUTH );
+	
+	runButton.addActionListener( this );
+	cancelButton.addActionListener( this );
+	
+	dialog.getRootPane().setDefaultButton( runButton ); //defines the default button that will run when enter is pressed
+	
+	actionPerformed( e ){
+		this.dialog.dispose(); //closes the dialog
+		//Macros.message( view, (!op1Field.isSelected()?"true":"false") );
+		
+		cmd = e.getActionCommand();
+		
+		if( cmd.equals( "Run" ) ){ //if the run button was pressed
+			start( view, op1Field.isSelected() );
+		} else {
+			
+		}
+	}
+	
+	dialog.pack();
+	dialog.setLocationRelativeTo( view );
+	dialog.setDefaultCloseOperation( JDialog.DISPOSE_ON_CLOSE );
+	dialog.setVisible( true );
+	
+	return;
+}
+
+indentLevel = 0;
+indentStr = "";
+
+
+
+void start( View view, boolean changeZero ){
+	//Macros.message( view, "starting now" );
+	this.view = view;
+	
+	int lineCount = buffer.getLineCount();
+	char firstChar;
+	String lineStr;
+	String trimLine;
+	String lineSep = buffer.getProperty( buffer.LINESEP );
+	StringBuilder result = new StringBuilder( textArea.getBufferLength() );
+	int levelDiff;
+	
+	//for( int line = 90; line < 92; line++ ){
+	for( int line = 0; line < lineCount; line++ ){
+		lineStr = buffer.getLineText( line );
+		levelDiff = braceLevel( lineStr );
+		//Macros.message( view, "line[" + line + "][" + lineStr + "]" );
+		//Macros.message( view, "LevelDiff:[" + levelDiff + "], indentLevel[" + indentLevel + "]" );
+		
+		if( levelDiff < 0 ){
+			//Macros.message( view, "line["+line+"][" + lineStr + "] contains }" );
+			for( int i = 0; i > levelDiff; i-- ){ //unindent for every level
+				unindent();
+			}
+		}
+		
+		//Macros.message( view, "[" + line + "][" + lineStr + "]" );
+		//Macros.message( view, "line["+line+"] indent["+ getIndentLevel() +"]" );
+		if( changeZero && getIndentLevel() == 0 ){
+			//don't touch the code;
+			result.append( lineStr );
+		} else {
+			trimLine = lineStr.trim();
+			if( levelDiff == 0 ){
+				if( trimLine.length() != 0 && trimLine.charAt(0) == '}' ){
+					result.append( calcIndent( getIndentLevel() - 1 ) + trimLine );
+				} else {
+					result.append( getIndent() + trimLine );
+				}
+			} else {
+				result.append( getIndent() + trimLine );
+			}
+		}
+		
+		if( line < lineCount -1 ){
+			result.append( lineSep );
+		}
+		
+		if( levelDiff > 0 ){
+			//Macros.message( view, "line["+line+"][" + lineStr + "] contains {" );
+			for( int i = 0; i < levelDiff; i++ ){
+				indent();
+			}
+		}
+		
+		if( line < -100 && line % 10 == 0 ){
+			Macros.message( view, "line [" + line + "] evaluated" );
+		}
+	}
+	textArea.setText( result.toString() );
+	Macros.message( view, "finished" );
+}
+
+/**
+ *  Determines the change in levels from the string. If positive, then we are that
+ *  many more levels deep. If negative, then we are that many levels higher.
+**/
+public int braceLevel( String lineStr ){
+	lineStr = lineStr.trim();
+	if( lineStr.startsWith( "//", 0 )){
+		//Macros.message( view, "isComment" );
+		return( 0 );
+	} else {
+		char[] chars = lineStr.toCharArray();
+		char tChar;
+		int level = 0;
+		for( int i = 0; i < chars.length; i++ ){
+			tChar = chars[i];
+			
+			if( tChar == '"' ){
+				//Macros.message( view, "found doublequote" );
+				do {
+					tChar = chars[++i];
+				} while( tChar != '"' && i < chars.length -1 );
+				//Macros.message( view, "doublequote end char[" + chars[i] + "]" );
+			} else if( tChar == '\'' ){
+				//Macros.message( view, "found single quote" );
+				tChar = chars[++i];
+				if( tChar == '\\' ){
+					//Macros.message( view, "found backslash" );
+					//extra character
+					i++;
+				}
+				i++;
+				//Macros.message( view, "singlequote end char[" + chars[i] + "]" );
+			} else if( tChar == '{' ){
+				//Macros.message( view, "Found openBracket[" + level + "," + i + "]" );
+				level++;
+			} else if( tChar == '}' ){
+				//Macros.message( view, "Found closeBracket[" + level + "," + i + "]" );
+				level--;
+			}
+		}
+		return( level );
+	}
+}
+
+public void unindent(){
+	if( indentLevel > 0 ){
+		indentLevel--;
+		indentStr = calcIndent( indentLevel );
+	}
+}
+
+public void indent(){
+	indentLevel++;
+	indentStr += "\t";
+}
+
+public int getIndentLevel(){
+	return( indentLevel );
+}
+
+public String getIndent(){
+	return( indentStr );
+}
+
+private String calcIndent( int level ){
+	if( level < 1 ){
+		return("");
+	} else {
+		char[] result = new char[ level ];
+		for( int i = 0; i < level; i++ ){
+			result[i] = '\t';
+		}
+		return( new String( result ));
+	}
+}
+
+if( buffer.isReadOnly() ){
+	Macros.error( view, "Buffer is read-only, and cannot be modified" );
+} else {
+	//start( view );    //to not show dialog, uncomment this and comment prev line
+	showDialog( view );
+}

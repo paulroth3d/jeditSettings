@@ -1,0 +1,122 @@
+/**
+ * .bsh - Converts XML style entities to lowercase (also works with HTML)
+ * 
+ * $Id$
+ */
+
+import gnu.regexp.*;
+import javax.swing.border.*;
+
+//Macros.message( view, "Before RegexIterator" );
+RegexIterator( String src, REMatch[] matches, int i ){
+	int lastIndex;
+	if( i > 0 ){
+		lastIndex = matches[ i-1 ].getEndIndex();
+	} else {
+		lastIndex = 0;
+	}
+	//Macros.message( view, "starting up lastIndex[" + lastIndex + "]"  );
+	
+	isValid(){
+		return( i > -1 && i < matches.length );
+	}
+	
+	prev(){
+		if( this.i >= 0 ){
+			return( RegexIterator( src, matches, this.i-1 ) );
+		} else {
+			return( this );
+		}
+	}
+	
+	next(){
+		if( isValid() ){
+			return( RegexIterator( src, matches, this.i+1 ) );
+		} else {
+			return( this );
+		}
+	}
+	
+	getBefore(){
+		return( src.substring( lastIndex, matches[ this.i ].getStartIndex() ) );
+	}
+	
+	getCurrent(){
+		return( matches[ this.i ] );
+	}
+	
+	getAfter(){
+		return( src.substring( matches[ this.i ].getEndIndex() ) );
+	}
+	
+	return( this );
+}
+//Macros.message( view, "After RegexIterator" );
+
+void start( View view ){
+	//Macros.message( view, "starting now" );
+	this.view = view;
+	
+	String regex = "<\\s*(/?)([a-zA-Z0-9]+)([^>]*>)";//"<\\s*((/\\s*)?[a-z]*[A-Z][^\\s]*)";
+	RE re = null;
+	StringBuilder result = new StringBuilder();
+	
+	try {
+		re = new RE( regex );
+	} catch (REException err ){
+		Macros.error( view, "Could not compile regex[" + regex + "]" );
+	}
+	
+	//Macros.message( view, "Before getting bufferText" );
+	JEditTextArea area = view.getTextArea();
+	String bufferText = area.getText( 0, area.getBufferLength() );
+	//Macros.message( view, "After getting bufferText" );
+	
+	//bufferText manipulated
+	REMatch[] matches = re.getAllMatches( bufferText, 0 );
+	REMatch match;
+	//Macros.message( view, "Number of matches:" + matches.length );
+	
+	StringBuilder result = new StringBuilder();
+	
+	int elementCount = 0;
+	itr = RegexIterator( bufferText, matches,0 );
+	while( itr.isValid() ){
+		result.append( itr.getBefore() );
+		match = itr.getCurrent();
+		//Macros.message( view, "Before node:" + (++elementCount) );
+		result.append( match.toString() );
+		
+		//Macros.message( view, "ElementCount[" + (++elementCount) + "]" );
+		//Macros.message( view, "Before:" + itr.getBefore() );
+		//Macros.message( view, "current:" + matchToString( itr.getCurrent() ) );
+		
+		
+		//Macros.message( view, "First has Next:" + itr.hasNext() );
+		//Macros.message( view, "Before next" );
+		itr = itr.next();
+		//Macros.message( view, "After next" );
+	}
+	Macros.message( view, "FINAL ElementCount[" + (elementCount) + "]" );
+	itr = itr.prev();
+	result.append( itr.getAfter() );
+	
+	
+	newBuffer = jEdit.newFile( view );
+	area = view.getTextArea();
+	area.setText( result.toString() );
+}
+
+String matchToString( REMatch match ){
+	if( match == null ){
+		return( "<REMatch:NULL />" );
+	} else {
+		return( "<REMatch start='" + match.getStartIndex() + "' end='" + match.getEndIndex() + "'>\n" + match.toString() + "\n</REMatch>" );
+	}
+}
+
+if( buffer.isReadOnly() ){
+	Macros.error( view, "Buffer is read-only, and cannot be modified" );
+} else {
+	start( view );    //to not show dialog, uncomment this and comment prev line
+}

@@ -1,0 +1,211 @@
+import gnu.regexp.*;
+import javax.swing.border.*;
+
+void showDialog( View view ) {
+	
+	title = "Add or Remove Block Decorators";
+	
+	dialog = new JDialog(view, title, false);
+	content = new JPanel(new BorderLayout());
+	content.setBorder(new EmptyBorder(5, 5, 5, 5));
+	dialog.setContentPane(content);
+	
+	opPanel = new JPanel( new GridLayout(2,1) );
+	
+	prPanel = new JPanel(new GridLayout(1, 2));
+	prLabel = new JLabel("Line Delimiter: (Tab default)");
+	prField = new JTextField( "\t" );
+	prPanel.add(prLabel);
+	prPanel.add(prField);
+	
+	dlPanel = new JPanel( new GridLayout(1,2));
+	dlLabel = new JLabel("Separator");
+	dlField = new JTextField( "." );
+	dlPanel.add(dlLabel);
+	dlPanel.add(dlField);
+	
+	opPanel.add( prPanel );
+	opPanel.add( dlPanel );
+	
+	content.add(opPanel, BorderLayout.CENTER);
+	
+	buttonPanel = new JPanel(new GridLayout(1, 3));
+	buttonPanel.setBorder( new EmptyBorder(5, 0, 0, 0));
+	
+	runButton = new JButton("Run");
+	cancelButton = new JButton("Cancel");
+	
+	buttonPanel.add(runButton);
+	buttonPanel.add(cancelButton);
+	
+	content.add(buttonPanel, BorderLayout.SOUTH);
+	
+	runButton.addActionListener(this);
+	cancelButton.addActionListener(this);
+	
+	dialog.getRootPane().setDefaultButton(runButton);
+	
+	actionPerformed(e) {
+		this.dialog.dispose();
+		
+		cmd = e.getActionCommand();
+		
+		if(cmd.equals("Run")){
+			//decryptBuffer(this.pwField.getPassword());
+			runCode( view, this.prField.getText(), this.dlField.getText() );
+		}
+		
+		return;
+	}
+	
+	dialog.pack();
+	dialog.setLocationRelativeTo(view);
+	dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+	dialog.setVisible(true);
+}
+
+void runCode( View view, String lineDelim, String separator ){
+	Selection[] selections = textArea.getSelection();
+	Selection select;
+	String selectedText;
+	String packageText;
+	String groupText;
+	String lineText;
+	
+	if( selections == null || selections.length < 1 ){
+		Macros.error( view, "No lines selected" );
+		return( null );
+	}
+	
+	for( int j = 0; j < selections.length; j++ ){
+		select = selections[j];
+		selectedText = textArea.getSelectedText( select );
+		
+		if( !(".").equals( separator ) ){
+			selectedText = selectedText.replaceAll( separator, "." );
+		}
+		
+		packageText = getPackageText( selectedText );
+		groupText = getGroupText( selectedText );
+		lineText = getLineText( selectedText );
+		
+		//textArea.setSelectedText( select, groupText );
+		textArea.setSelectedText( select, packageText + "\n" + groupText + "\n" + lineText );
+	}
+}
+
+String getPackageText( String selectedText ){
+	String myResult = new String( "" + selectedText );
+	myResult = "\n" + myResult;
+	myResult = myResult.replaceAll( "\t", "\n" );
+	//myResult = myResult.replaceAll( "^(Profile Name|Type)$", "" );
+	myResult = myResult.replaceAll( "\n([^\n.]+[.]).+(\n\\1.+)*", "‡$0" );
+	myResult = myResult.replaceAll( "‡\n", "\n‡" );
+	
+		//myResult = myResult.replaceAll( "^([^\\n.]+[.]).+(\\n\\1.+)*", "‡$0" );
+	myResult = myResult.replaceAll( "\n[^‡\n.]+[.].+", "\n" );
+	myResult = myResult.replaceAll( "[.].+", "" );
+	myResult = myResult.replaceAll( "‡", "" );
+	myResult = myResult.replaceAll( "^\n", "" );
+	
+	myResult = myResult.replaceAll( "\n", "\t" );
+	
+	return( myResult );
+	/*
+	SearchAndReplace.setSearchString(lineDelim);
+	SearchAndReplace.setReplaceString("\\n");
+		SearchAndReplace.setBeanShellReplace(false);
+		SearchAndReplace.setWholeWord(false);
+		SearchAndReplace.setIgnoreCase(true);
+		SearchAndReplace.setRegexp(true);
+		SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+		SearchAndReplace.replaceAll(view);
+	
+	SearchAndReplace.setSearchString("^(Profile Name|Type)$");
+	SearchAndReplace.setReplaceString("");
+		SearchAndReplace.setBeanShellReplace(false);
+		SearchAndReplace.setWholeWord(false);
+		SearchAndReplace.setIgnoreCase(true);
+		SearchAndReplace.setRegexp(true);
+		SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+		SearchAndReplace.replaceAll(view);
+	
+	SearchAndReplace.setSearchString("^([^\\n.]+[.]).+(\\n\\1.+)*");
+	SearchAndReplace.setReplaceString("‡$0");
+		SearchAndReplace.setBeanShellReplace(false);
+		SearchAndReplace.setWholeWord(false);
+		SearchAndReplace.setIgnoreCase(true);
+		SearchAndReplace.setRegexp(true);
+		SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+		SearchAndReplace.replaceAll(view);
+	
+	SearchAndReplace.setSearchString("^[^‡\\n.]+[.].+");
+	SearchAndReplace.setReplaceString("");
+		SearchAndReplace.setBeanShellReplace(false);
+		SearchAndReplace.setWholeWord(false);
+		SearchAndReplace.setIgnoreCase(true);
+		SearchAndReplace.setRegexp(true);
+		SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+		SearchAndReplace.replaceAll(view);
+	
+	SearchAndReplace.setSearchString("[.].+");
+	SearchAndReplace.setReplaceString("");
+		SearchAndReplace.setBeanShellReplace(false);
+		SearchAndReplace.setWholeWord(false);
+		SearchAndReplace.setIgnoreCase(true);
+		SearchAndReplace.setRegexp(true);
+		SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+		SearchAndReplace.replaceAll(view);
+	
+	SearchAndReplace.setSearchString("‡");
+	SearchAndReplace.setReplaceString("");
+		SearchAndReplace.setBeanShellReplace(false);
+		SearchAndReplace.setWholeWord(false);
+		SearchAndReplace.setIgnoreCase(true);
+		SearchAndReplace.setRegexp(true);
+		SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+		SearchAndReplace.replaceAll(view);
+	
+	SearchAndReplace.setSearchString("\\n");
+	SearchAndReplace.setReplaceString(lineDelim);
+		SearchAndReplace.setBeanShellReplace(false);
+		SearchAndReplace.setWholeWord(false);
+		SearchAndReplace.setIgnoreCase(true);
+		SearchAndReplace.setRegexp(true);
+		SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+		SearchAndReplace.replaceAll(view);
+	*/
+}
+
+String getGroupText( String selectedText ){
+	String myResult = new String( "" + selectedText );
+	myResult = "\n" + myResult;
+	myResult = myResult.replaceAll( "\t", "\n" );
+	
+	myResult = myResult.replaceAll( "[.][^\n]+", "" );
+	
+	myResult = myResult.replaceAll( "^\n", "" );
+	myResult = myResult.replaceAll( "\n", "\t" );
+	
+	return( myResult );
+}
+
+String getLineText( String selectedText ){
+	String myResult = new String( "" + selectedText );
+	myResult = "\n" + myResult;
+	myResult = myResult.replaceAll( "\t", "\n" );
+	
+	myResult = myResult.replaceAll( "\n([^\n.]+[.])", "\n" );
+	
+	myResult = myResult.replaceAll( "^\n", "" );
+	myResult = myResult.replaceAll( "\n", "\t" );
+	
+	return( myResult );
+}
+	
+
+if(buffer.isReadOnly()){
+	Macros.error( view, "Buffer is read-only." );
+} else {
+	showDialog(view);
+}

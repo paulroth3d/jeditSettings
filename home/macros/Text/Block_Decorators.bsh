@@ -1,0 +1,222 @@
+/*
+ * Rem_Block_Decorators.bsh - Removes the javadoc stars on a selection of text
+ * 
+ * $Id$
+ */
+
+import gnu.regexp.*;
+import javax.swing.border.*;
+
+void showDialog( View view ) {
+  
+  title = "Add or Remove Block Decorators";
+  
+  dialog = new JDialog(view, title, false);
+  content = new JPanel(new BorderLayout());
+  content.setBorder(new EmptyBorder(5, 5, 5, 5));
+  dialog.setContentPane(content);
+  
+  opPanel = new JPanel( new GridLayout(3,1) );
+  
+  prPanel = new JPanel(new GridLayout(1, 2));
+  prLabel = new JLabel("Prefix: ");
+  prField = new JTextField( "/**" );
+  prPanel.add(prLabel);
+  prPanel.add(prField);
+  
+  dlPanel = new JPanel( new GridLayout(1,2));
+  ldLabel = new JLabel("Line Delimiter: ");
+  ldField = new JTextField( " *  " );
+  dlPanel.add(ldLabel);
+  dlPanel.add(ldField);
+  
+  poPanel = new JPanel( new GridLayout(1,2));
+  poLabel = new JLabel("Postfix: ");
+  poField = new JTextField( "**/" );
+  poPanel.add(poLabel);
+  poPanel.add(poField);
+  
+  opPanel.add( prPanel );
+  opPanel.add( dlPanel );
+  opPanel.add( poPanel );
+  
+  content.add(opPanel, BorderLayout.CENTER);
+  
+  buttonPanel = new JPanel(new GridLayout(1, 3));
+  buttonPanel.setBorder( new EmptyBorder(5, 0, 0, 0));
+  
+  addButton = new JButton("Add");
+  remButton = new JButton("Remove");
+  cancelButton = new JButton("Cancel");
+  
+  buttonPanel.add(addButton);
+  buttonPanel.add(remButton);
+  buttonPanel.add(cancelButton);
+  
+  content.add(buttonPanel, BorderLayout.SOUTH);
+  
+  addButton.addActionListener(this);
+  remButton.addActionListener(this);
+  cancelButton.addActionListener(this);
+  
+  dialog.getRootPane().setDefaultButton(addButton);
+  
+  actionPerformed(e) {
+    this.dialog.dispose();
+    
+    cmd = e.getActionCommand();
+    
+    if(cmd.equals("Add")){
+		//decryptBuffer(this.pwField.getPassword());
+		changeBlocks( view, true, this.prField.getText(), this.ldField.getText(), this.poField.getText() );
+    } else if( cmd.equals("Remove")){
+		changeBlocks( view, false, this.prField.getText(), this.ldField.getText(), this.poField.getText() );
+	}
+    
+    return;
+  }
+  
+  dialog.pack();
+  dialog.setLocationRelativeTo(view);
+  dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+  dialog.setVisible(true);
+}
+
+void changeBlocks( View view, boolean add, String prefix, String lineDelim, String postfix ){
+	this.view = view;
+	
+	Selection[] selections = textArea.getSelection();
+	Selection select;
+	String selected;
+	String result;
+	int line = 0;
+	
+	//Macros.message( view, "number of lines selected = " + lines.length );
+	
+	if( selections == null || selections.length < 1 ){
+		Macros.error( view, "No lines selected" );
+		return( null );
+	}
+	
+	for( int j = 0; j < selections.length; j++ ){
+		select = selections[j];
+		selected = textArea.getSelectedText( select );
+		if( add == true ){
+			result = addDecorators( selected, prefix, lineDelim, postfix );
+		} else {
+			result = removeDecorators( selected, prefix, lineDelim, postfix );
+		}
+		textArea.setSelectedText( select, result );
+	}
+}
+
+String addDecorators( String text, String prefix, String lineDelim, String postfix ){
+	RE re = null;
+	StringBuilder builder;
+	String indent;//, star = " " + lineDe* ";
+	
+	try {
+		re = new RE( "^\\t+" );
+	} catch( REException err ){
+		Macros.error( view, "failed regex" );
+	}
+	
+	REMatch match = re.getMatch( text );
+	if( match == null ){
+		indent = "";
+	} else {
+		indent = match.toString();
+	}
+	//Macros.message( view, "indent[" + indent + "]" );
+	
+	builder = new StringBuilder( indent + prefix );
+	
+	try {
+		String indentRE = new String( indent );
+		indentRE.replace( "\t", "\\t" );
+		//Macros.message( view, indentRE );
+		re = new RE( "(\\n" + indentRE + ")" );
+		//re = new RE( "(\\n\\t*) *" );
+	} catch( REException err ){
+		Macros.error( view, "failed regex" );
+	}
+	
+	text = "\n" + text;
+	builder.append( re.substituteAll( text, "\n" + indent + lineDelim ) );
+	builder.append( "\n" + indent + postfix );
+	
+	//Macros.message( view, "was[" + text + "], now[" + builder.toString() + "]" );
+	//builder.append( "\n" ).append( indent );
+	return( builder.toString() );
+}
+
+String removeDecorators( String text, String prefix, String lineDelim, String postfix ){
+	RE re = null;
+	REMatch match = null;
+	String regexp = "^(\\t* *)";// + 
+	String indent = null, indentRE = null;
+	
+	//Macros.message( view, "regexp[" + regexp + "]" );
+	
+	try {
+		re = new RE( regexp );
+	} catch( REException err ){
+		Macros.error( view, "failed regex:" + err );
+	}
+	
+	match = re.getMatch( text );
+	
+	if( match == null ){
+		indent = "";
+	} else {
+		indent = match.toString();
+		indentRE = new String( indent ).replace( "\t", "\\t" );
+	}
+	
+	//remove prefix
+	regexp = regexp + regexClean( prefix ) + "[^\\n]*\\n";
+	
+	try {
+		re = new RE( regexp );
+	} catch( REException err ){
+		Macros.error( view, "failed regex:" + err );
+	}
+	
+	text = re.substitute( text, "" );
+	//Macros.message( view, "now[" + text + "]" );
+	
+	try {
+		re = new RE( "(\\n" + indentRE + ")" + regexClean(postfix) );
+	} catch( REException err ){
+		Macros.error( view, "failed regex" );
+	}
+	
+	text = re.substitute( text, "" );
+	//Macros.message( view, "now[" + text + "]" );
+	
+	try {
+		//since we remove the initial line break, we want to still allow the line delim to be removed.
+		re = new RE( "(\\n?" + indentRE + ")" + regexClean(lineDelim) );// + "[ \\t]*" );//re = new RE( "(\\n\\t*) *\\*[ \\t]*" );
+	} catch( REException err ){
+		Macros.error( view, "failed regex" );
+	}
+	
+	text = re.substituteAll( text, "$1" );
+	//Macros.message( view, "now[" + text + "]" );
+	
+	//Macros.message( view, "now[" + text + "]" );
+	
+	return( text );
+}
+
+String regexClean( String str ){
+	str = str.replace( "\\", "\\\\" );
+	str = str.replace( "*", "\\*" );
+	return( str );
+}
+
+if(buffer.isReadOnly()){
+	Macros.error( view, "Buffer is read-only." );
+} else {
+	showDialog(view);
+}

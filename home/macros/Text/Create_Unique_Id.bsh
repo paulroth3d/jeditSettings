@@ -1,0 +1,44 @@
+/*
+ * Create_Unique_Id.bsh - a BeanShell macro script for creating a unique id.
+ *
+ * Copyright (C) 2006 Paul Rot
+ *
+ * :mode=beanshell:tabSize=4:indentSize=4:maxLineLen=0:noTabs=false:
+ * :indentOnTab=true:indentOnEnter=true:folding=explicit:collapseFolds=1:
+ *
+ * $Id: Create_Unique_Id.bsh,v 1.0 2006/02/20 18:00 paul roth Exp $
+ */
+
+String getUniqueId( boolean bothCases ){
+	Random rand = new Random( new Date().getTime() );
+	int strlen = 7, charVal;
+	int maxChar = (bothCases?61:35);
+	char tChar;
+	char[] myString = new char[ strlen ];
+	
+	for( int i = 0; i < strlen; i++ ){
+		charVal = rand.nextInt() % maxChar;
+		if( charVal < 0 ) charVal *= -1;
+		
+		if( charVal < 10 ){
+			charVal += 48;
+		} else if ( charVal < 36 ){
+			charVal -= 10;
+			charVal += 65;
+		} else {
+			charVal -= 36;
+			charVal += 97;
+		}
+		tChar = (char)charVal;
+		myString[i] = tChar;
+	}
+	return( new String(myString) );
+}
+
+void setUniqueId(){
+	textArea.setSelectedText( getUniqueId( true ) );
+}
+
+setUniqueId();
+
+// end Create_Unique_Id.bsh

@@ -1,0 +1,114 @@
+/**
+ * Converts Integers to Hexcode.bsh - 
+ * 
+ * $Id$
+ */
+
+import gnu.regexp.*;
+import javax.swing.border.*;
+
+//Macros.message( view, "Before RegexIterator" );
+RegexIterator( String src, REMatch[] matches, int i ){
+	int lastIndex;
+	if( i > 0 ){
+		lastIndex = matches[ i-1 ].getEndIndex();
+	} else {
+		lastIndex = 0;
+	}
+	//Macros.message( view, "starting up lastIndex[" + lastIndex + "]"  );
+	
+	isValid(){
+		return( i > -1 && i < matches.length );
+	}
+	
+	prev(){
+		if( this.i >= 0 ){
+			return( RegexIterator( src, matches, this.i-1 ) );
+		} else {
+			return( this );
+		}
+	}
+	
+	next(){
+		if( isValid() ){
+			return( RegexIterator( src, matches, this.i+1 ) );
+		} else {
+			return( this );
+		}
+	}
+	
+	getBefore(){
+		return( src.substring( lastIndex, matches[ this.i ].getStartIndex() ) );
+	}
+	
+	getCurrent(){
+		return( matches[ this.i ] );
+	}
+	
+	getAfter(){
+		return( src.substring( matches[ this.i ].getEndIndex() ) );
+	}
+	
+	return( this );
+}
+//Macros.message( view, "After RegexIterator" );
+
+void start( View view ){
+	//Macros.message( view, "starting now" );
+	this.view = view;
+	
+	String regex;
+	RE re = null;
+	StringBuilder builder;
+	
+	regex = "\\d+";
+	try {
+		re = new RE( regex );
+	} catch (REException err ){
+		Macros.error( view, "Could not create regex[" + regex + "]" );
+	}
+	
+	Selection[] selections = textArea.getSelection();
+	Selection select;
+	String selected;
+	String result;
+	Integer tInt;
+	
+	if( selections == null || selections.length < 1 ){
+		Macros.error( view, "No lines selected" );
+		return( null );
+	}
+	
+	for( int j = 0; j < selections.length; j++ ){
+		select = selections[j];
+		selected = textArea.getSelectedText( select );
+		
+		REMatch[] matches = re.getAllMatches( selected, 0 );
+		REMatch match;
+		
+		builder = new StringBuilder("");
+		itr = RegexIterator( selected, matches,0 );
+		while( itr.isValid() ){
+			try {
+				match = itr.getCurrent();
+				
+				tInt = Integer.valueOf( match.toString() );
+				builder.append( Integer.toString( tInt.intValue(), 16 ).toUpperCase() );
+			} catch( NumberFormatException err ){
+				Macros.error( view, "Invalid number:" + match.toString() );
+			}
+			
+			itr = itr.next();
+		}
+		itr = itr.prev();
+		
+		//result = someFunction( selected );
+		textArea.setSelectedText( select, builder.toString() );
+	}
+}
+
+if( buffer.isReadOnly() ){
+	Macros.error( view, "Buffer is read-only, and cannot be modified" );
+} else {
+	start( view );
+}

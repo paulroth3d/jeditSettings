@@ -1,0 +1,119 @@
+/**
+ * CombineBuffers.bsh - Combines all the buffers into a single file for duplex printing
+ * 
+ * $Id$
+ */
+import gnu.regexp.*;
+import javax.swing.border.*;
+
+void showDialog( View view ){
+	title = "Keep Only or Remove Only";
+	
+	dialog = new JDialog( view, title, false ); //defines the parent, title, and whether other dialogs can be active at the same time
+	content = new JPanel( new BorderLayout() );
+	content.setBorder( new EmptyBorder( 5,5,5,5 ) );
+	dialog.setContentPane( content );
+	
+	formPanel = new JPanel( new GridLayout( 1,1 )); //defines the form as having only one input
+	
+	op1Panel = new JPanel( new GridLayout( 2,2 )); //defines the panel with a label and a field
+	op1Label = new JLabel( "Separator Prefix" );
+	op1Field = new JTextField( "/*-- " );//"\\n[[][^[]+[[]([^]]+)");
+	op1Panel.add( op1Label );
+	op1Panel.add( op1Field );
+	
+	op2Label = new JLabel( "Separator Suffix" );
+	op2Field = new JTextField( " --*/" );
+	op1Panel.add( op2Label );
+	op1Panel.add( op2Field );
+	
+	formPanel.add( op1Panel ); //binds the panel with the input to the form
+	
+	content.add( formPanel, BorderLayout.CENTER ); //binds the form to the dialog, in the center
+	
+	buttonPanel = new JPanel(new GridLayout(1, 2));
+	buttonPanel.setBorder( new EmptyBorder(5, 0, 0, 0));
+	
+	runButton = new JButton( "Run" );//defines the text on the button to Run
+	cancelButton = new JButton( "Cancel" ); // ditto for Cancel
+	
+	buttonPanel.add( runButton );
+	buttonPanel.add( cancelButton );
+	
+	content.add( buttonPanel, BorderLayout.SOUTH );
+	
+	runButton.addActionListener( this );
+	cancelButton.addActionListener( this );
+	
+	dialog.getRootPane().setDefaultButton( runButton ); //defines the default button that will run when enter is pressed
+	
+	actionPerformed( e ){
+		this.dialog.dispose(); //closes the dialog
+		
+		cmd = e.getActionCommand();
+		
+		if( cmd.equals( "Run" ) ){ //if the run button was pressed
+			start( view, op1Field.getText(), op2Field.getText() );
+		} else {
+			
+		}
+	}
+	
+	dialog.pack();
+	dialog.setLocationRelativeTo( view );
+	dialog.setDefaultCloseOperation( JDialog.DISPOSE_ON_CLOSE );
+	dialog.setVisible( true );
+	
+	return;
+}
+
+void start( View view, String linePrefix, String lineSuffix ){
+	//Macros.message( view, "starting now" );
+	//Macros.message( view, "prefix[" + linePrefix + "] suffix[" + lineSuffix + "]" );
+	this.view = view;
+	
+	StringBuilder builder = new StringBuilder( "" );// );
+	
+	Buffer[] buffers = jEdit.getBuffers();
+	//Macros.message( view, "Buffer.length:" + buffers.length );
+	for( int i = 0; i < buffers.length; i++ ){
+		appendBuffer( builder, buffers[i], linePrefix, lineSuffix );
+	}
+	
+	newBuffer = jEdit.newFile(view);
+	area = view.getTextArea();
+	area.setText( builder.toString() ); 
+	
+	return;
+}
+
+void appendBuffer( StringBuilder result, Buffer aBuffer, String linePrefix, String lineSuffix ){
+	//Macros.message( view, "start to append the buffer" );
+	String pathStr = aBuffer.getPath();
+	//Macros.message( view, "add initial line separator" );
+	result.append( linePrefix ).append( makeSeparator( pathStr.length() - linePrefix.length() ) ).append( "\n" );
+	result.append( pathStr ).append( "\n" );
+	result.append( makeSeparator( pathStr.length() - lineSuffix.length() ) ).append( lineSuffix ).append( "\n" ).append( "\n" );
+	
+	//Macros.message( view, "start after adding lines" );
+	result.append( aBuffer.getText( 0, aBuffer.getLength() ) );
+	//Macros.message( view, "start after adding text" );
+	
+	result.append( "\n" ).append( "\n" );
+	//Macros.message( view, "finishing appendBuffer" );
+}
+
+String makeSeparator( int length ){
+	StringBuilder result = new StringBuilder();
+	for( int i = 0; i < length; i++ ){
+		result.append( "-" );
+	}
+	return( result.toString() );
+}
+
+if( buffer.isReadOnly() ){
+	Macros.error( view, "Buffer is read-only, and cannot be modified" );
+} else {
+	showDialog( view ); //to show dialog uncomment this and comment next line
+	//start( view );    //to not show dialog, uncomment this and comment prev line
+}

@@ -1,0 +1,125 @@
+/**
+ * Substring.bsh - Retrieves the substring on a selection
+ * 
+ * $Id$
+ */
+
+import javax.swing.border.*;
+
+void showDialog( View view ){
+	title = "Substring";
+	
+	dialog = new JDialog( view, title, false ); //defines the parent, title, and whether other dialogs can be active at the same time
+	content = new JPanel( new BorderLayout() );
+	content.setBorder( new EmptyBorder( 5,5,5,5 ) );
+	dialog.setContentPane( content );
+	
+	formPanel = new JPanel( new GridLayout( 2,1 )); //defines the form as having only one input
+	
+	op1Panel = new JPanel( new GridLayout( 1,2 )); //defines the panel with a label and a field
+	op1Label = new JLabel( "Begin:" );
+	op1Field = new JTextField();
+	op1Panel.add( op1Label );
+	op1Panel.add( op1Field );
+	
+	formPanel.add( op1Panel );
+	
+	op2Panel = new JPanel( new GridLayout( 1,2 )); //defines the panel with a label and a field
+	op2Label = new JLabel( "End:" );
+	op2Field = new JTextField();
+	op2Panel.add( op2Label );
+	op2Panel.add( op2Field );
+	
+	formPanel.add( op2Panel ); //binds the panel with the input to the form
+	
+	content.add( formPanel, BorderLayout.CENTER ); //binds the form to the dialog, in the center
+	
+	buttonPanel = new JPanel(new GridLayout(1, 2));
+	buttonPanel.setBorder( new EmptyBorder(5, 0, 0, 0));
+	
+	runButton = new JButton( "Run" );//defines the text on the button to Run
+	cancelButton = new JButton( "Cancel" ); // ditto for Cancel
+	
+	buttonPanel.add( runButton );
+	buttonPanel.add( cancelButton );
+	
+	content.add( buttonPanel, BorderLayout.SOUTH );
+	
+	runButton.addActionListener( this );
+	cancelButton.addActionListener( this );
+	
+	dialog.getRootPane().setDefaultButton( runButton ); //defines the default button that will run when enter is pressed
+	
+	actionPerformed( e ){
+		this.dialog.dispose(); //closes the dialog
+		
+		cmd = e.getActionCommand();
+		
+		if( cmd.equals( "Run" ) ){ //if the run button was pressed
+			String fieldText;
+			int begin, end;
+			try {
+				fieldText = op1Field.getText();
+				begin = new Integer( fieldText ).intValue();
+			} catch( NumberFormatException err ){
+				Macros.message( view, "Could not understand starting at:\n" + fieldText );
+				return;
+			}
+			try {
+				fieldText = op2Field.getText();
+				end = new Integer( fieldText ).intValue();
+			} catch( NumberFormatException err ){
+				Macros.message( view, "Could not understand starting at:\n" + fieldText );
+				return;
+			}
+			Macros.message( view, "begin:"+begin + ", end:" +end );
+			start( view, begin, end );
+		} else {
+			
+		}
+	}
+	
+	dialog.pack();
+	dialog.setLocationRelativeTo( view );
+	dialog.setDefaultCloseOperation( JDialog.DISPOSE_ON_CLOSE );
+	dialog.setVisible( true );
+	
+	return;
+}
+
+void start( View view, int begin, int end ){
+	Macros.message( view, "starting now" );
+	
+	selections = textArea.getSelection();
+	Macros.message( view, "Running" );
+	
+	if( selections == null || selections.length < 1 ){
+		Macros.error( view, "No text was selected" );
+		return;
+	}
+	
+	for( int i = 0; i < selections.length; i++ ){
+		Macros.message( view, "check selection:" +i );
+		select = selections[i];
+		String result = textArea.getSelectedText( select );
+		result = getSubstring( result, begin, end );
+		Macros.message( view, result );
+	}
+}
+
+String getSubstring( String text, int begin, int end ){
+	if( begin < 0 ){
+		begin = 0;
+	}
+	if( end > text.length() ){
+		end = text.length();
+	}
+	return( text.substring( begin, end ));
+}
+
+if( buffer.isReadOnly() ){
+	Macros.error( view, "Buffer is read-only, and cannot be modified" );
+} else {
+	showDialog( view ); //to show dialog uncomment this and comment next line
+	//start( view );    //to not show dialog, uncomment this and comment prev line
+}

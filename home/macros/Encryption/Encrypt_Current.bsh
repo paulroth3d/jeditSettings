@@ -1,0 +1,181 @@
+/*
+ * Encrypt_Current.bsh - Encrypts the current buffer content. The physical file
+ * content will not be modified until user saves the buffer.
+ *
+ * Uses PBE with MD5 and DES algorithm. Macro will prompt the user for a 
+ * password which will be used to encrypt the buffer content. Because encrypted
+ * bytes can produce illegal characters for some buffer encodings, their are
+ * replaced by their number representations separated by white space.
+ *
+ * David Mlejnek, mailto:davo@nadhlad.sk
+ *
+ */
+
+import java.io.*;
+import javax.crypto.*;
+import javax.crypto.spec.*;
+import javax.swing.border.*;
+
+String TRANSFORMATION = "PBEWithMD5AndDES";
+String ENCODING = buffer.getStringProperty(Buffer.ENCODING);
+int BYTES_REPLACEMENT_OFFSET = 256;
+int BYTES_REPLACEMENT_RADIX = 32;
+
+int ENCRYPTED_FILE_WIDTH = 76;
+
+void showDialog() {
+  
+  title = "Encrypt buffer";
+  
+  dialog = new JDialog(view, title, false);
+  content = new JPanel(new BorderLayout());
+  content.setBorder(new EmptyBorder(5, 5, 5, 5));
+  dialog.setContentPane(content);
+  
+  textPanel = new JPanel(new GridLayout(2, 1));
+  
+  pwPanel1 = new JPanel(new GridLayout(1, 2));
+  pwLabel1 = new JLabel("Enter password: ");
+  pwField1 = new JPasswordField();
+  pwPanel1.add(pwLabel1);
+  pwPanel1.add(pwField1);
+  textPanel.add(pwPanel1);
+  
+  pwPanel2 = new JPanel(new GridLayout(1, 2));
+  pwLabel2 = new JLabel("Confirm password: ");
+  pwField2 = new JPasswordField();
+  pwPanel2.add(pwLabel2);
+  pwPanel2.add(pwField2);
+  textPanel.add(pwPanel2);
+  
+  content.add(textPanel, BorderLayout.CENTER);
+  
+  
+  buttonPanel = new JPanel(new GridLayout(1, 2));
+  buttonPanel.setBorder( new EmptyBorder(5, 0, 0, 0));
+  
+  okButton = new JButton("OK");
+  cancelButton = new JButton("Cancel");
+  
+  buttonPanel.add(okButton);
+  buttonPanel.add(cancelButton);
+  
+  content.add(buttonPanel, BorderLayout.SOUTH);
+  
+  okButton.addActionListener(this);
+  cancelButton.addActionListener(this);
+  
+  dialog.getRootPane().setDefaultButton(okButton);
+  
+  
+  actionPerformed(e) {
+  
+    this.dialog.dispose();
+    
+    cmd = e.getActionCommand();
+    
+    if(cmd.equals("OK")) {
+      
+      char[] passwd = this.pwField1.getPassword();
+      char[] passwd2 = this.pwField2.getPassword();
+      
+      if(!equals(passwd, passwd2)) {
+    
+        Macros.error(view, "Passwords unequal, operation aborted.");
+        
+      } else {
+        
+        encryptBuffer(passwd);
+        
+      }
+      
+    }
+    
+    return;
+  }
+
+  dialog.pack();
+  dialog.setLocationRelativeTo(view);
+  dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+  dialog.setVisible(true);
+  
+}
+
+void encryptBuffer(char[] passwd) {
+  
+  Cipher pbeCipher = createCipher(passwd, Cipher.ENCRYPT_MODE);
+  
+  String content = textArea.getText();
+  
+  // Encode the string into bytes using buffer encoding
+  byte[] data = content.getBytes(ENCODING);
+  
+  // Encrypt
+  byte[] enc = pbeCipher.doFinal(data);
+
+  //Replace bytes by their number representations
+  content = encodeBytes(enc);
+
+  textArea.setText(content);
+  textArea.goToBufferStart(false);
+    
+}
+
+Cipher createCipher(char[] passwd, int opmode) {
+  int iterationCount = 20;
+  byte[] salt = {
+      (byte)0xc7, (byte)0x73, (byte)0x21, (byte)0x8c,
+      (byte)0x7e, (byte)0xc8, (byte)0xee, (byte)0x99
+  };
+  
+  // Create PBE parameter set
+  PBEParameterSpec pbeParamSpec = new PBEParameterSpec(salt, iterationCount);
+  PBEKeySpec pbeKeySpec = new PBEKeySpec(passwd);
+  SecretKeyFactory keyFac = SecretKeyFactory.getInstance(TRANSFORMATION);
+  SecretKey pbeKey = keyFac.generateSecret(pbeKeySpec);
+  
+  // Create PBE Cipher
+  Cipher pbeCipher = Cipher.getInstance(TRANSFORMATION);
+  pbeCipher.init(opmode, pbeKey, pbeParamSpec);
+  
+  return pbeCipher;
+}
+
+boolean equals(char[] c1, char[] c2) {
+  if(c1.length != c2.length) {
+    return false;
+  }
+  for(i=0; i<c1.length; i++) {
+    if(c1[i] != c2[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+String encodeBytes(byte[] source) {
+  
+  StringBuffer buf = new StringBuffer();
+  width = 0;
+  
+  for(int i=0; i<source.length; i++) {
+    
+    int n = ((int) source[i]) + BYTES_REPLACEMENT_OFFSET;
+    String code = Integer.toString(n, BYTES_REPLACEMENT_RADIX);
+    buf.append(code);
+    
+    //insert newline char if width too large
+    if(width < ENCRYPTED_FILE_WIDTH) {
+      buf.append(" ");
+      width += code.length() + 1;
+    } else {
+      buf.append("\n");
+      width = 0;
+    }
+    
+  }
+  return buf.toString();
+}
+
+showDialog();
+

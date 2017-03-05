@@ -1,0 +1,32 @@
+/**
+ * Count_Chars.bsh.bsh - Counts the characters in a selection
+ * 
+ * $Id$
+ */
+
+void start( View view ){
+	selection = textArea.getSelection();
+	
+	if( selection == null || selection.length < 1 ){
+		Macros.error( view, "No text was selected" );
+		return;
+	}
+	
+	for( int i = 0; i < selection.length; i++ ){
+		select = selection[i];
+		String result = textArea.getSelectedText( select );
+		length = getLength( result );
+		Macros.message( view, "selection is " + length + " characters" );
+	}
+}
+
+int getLength( String text ){
+	return( text.length() );
+}
+
+if( buffer.isReadOnly() ){
+	Macros.error( view, "Buffer is read-only, and cannot be modified" );
+} else {
+	//showDialog( view ); //to show dialog uncomment this and comment next line
+	start( view );    //to not show dialog, uncomment this and comment prev line
+}

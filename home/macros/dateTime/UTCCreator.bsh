@@ -1,0 +1,140 @@
+/**
+ * .bsh - 
+ * 
+ * $Id$
+ */
+
+import javax.swing.border.*;
+
+void showDialog( View view ){
+	title = "Write WordWrap Into Text";
+	
+	dialog = new JDialog( view, title, false ); //defines the parent, title, and whether other dialogs can be active at the same time
+	content = new JPanel( new BorderLayout() );
+	content.setBorder( new EmptyBorder( 5,5,5,5 ) );
+	dialog.setContentPane( content );
+	
+	formPanel = new JPanel( new GridLayout( 4,1 )); //defines the form as having only one input
+	
+	op1Panel = new JPanel( new GridLayout( 1,2 )); //defines the panel with a label and a field
+	op1Label = new JLabel( "hour:" );
+	op1Field = new JTextField( "0" );
+	op1Panel.add( op1Label );
+	op1Panel.add( op1Field );
+	
+	op2Panel = new JPanel( new GridLayout( 1,2 ));
+	op2Label = new JLabel( "minute:" );
+	op2Field = new JTextField( "0" );
+	op2Panel.add( op2Label );
+	op2Panel.add( op2Field );
+	
+	op3Panel = new JPanel( new GridLayout( 1,2 ));
+	op3Label = new JLabel( "second:" );
+	op3Field = new JTextField( "0" );
+	op3Panel.add( op3Label );
+	op3Panel.add( op3Field );
+	
+	op4Panel = new JPanel( new GridLayout( 1,2 ));
+	op4Label = new JLabel( "millisecond:" );
+	op4Field = new JTextField( "0" );
+	op4Panel.add( op4Label );
+	op4Panel.add( op4Field );
+	
+	formPanel.add( op1Panel ); //binds the panel with the input to the form
+	formPanel.add( op2Panel );
+	formPanel.add( op3Panel );
+	formPanel.add( op4Panel );
+	
+	content.add( formPanel, BorderLayout.CENTER ); //binds the form to the dialog, in the center
+	
+	buttonPanel = new JPanel(new GridLayout(1, 2));
+	buttonPanel.setBorder( new EmptyBorder(5, 0, 0, 0));
+	
+	runButton = new JButton( "Run" );//defines the text on the button to Run
+	cancelButton = new JButton( "Cancel" ); // ditto for Cancel
+	
+	buttonPanel.add( runButton );
+	buttonPanel.add( cancelButton );
+	
+	content.add( buttonPanel, BorderLayout.SOUTH );
+	
+	runButton.addActionListener( this );
+	cancelButton.addActionListener( this );
+	
+	dialog.getRootPane().setDefaultButton( runButton ); //defines the default button that will run when enter is pressed
+	
+	actionPerformed( e ){
+		this.dialog.dispose(); //closes the dialog
+		
+		cmd = e.getActionCommand();
+		
+		if( cmd.equals( "Run" ) ){ //if the run button was pressed
+			start( view, op1Field.text, op2Field.text, op3Field.text, op4Field.text );
+		} else {
+			
+		}
+	}
+	
+	dialog.pack();
+	dialog.setLocationRelativeTo( view );
+	dialog.setDefaultCloseOperation( JDialog.DISPOSE_ON_CLOSE );
+	dialog.setVisible( true );
+	
+	return;
+}
+
+void start( View view, String hourStr, String minuteStr, String secondStr, String milliStr ){
+	Macros.message( view, "starting now" );
+	this.view = view;
+	
+	int hour = parseInt( hourStr ), minute = parseInt( minuteStr ), second = parseInt( secondStr ), milli = parseInt( milliStr );
+	long result = 1000L * 60 * 60 * hour;
+	result += 1000L * 60 * minute;
+	result += 1000L * second;
+	result += 1L * milli;
+	Macros.message( view, "Result[" + result + "]" );
+	Macros.message( view, "hour[" + hour + "] minute[" + minute + "] second[" + second + "] milli[" + milli + "]" );
+	
+	String resultStr = "" + result;
+	//textArea.setSelectedText( selections[0], result );
+	setCaretText( resultStr );
+}
+
+int parseInt( String str ){
+	try {
+		int myInt = Integer.parseInt( str ).intValue();
+		return( myInt );
+	} catch( Exception err ){
+		Macros.message( view, "Could not parse [" + str + "]" );
+	}
+}
+
+void setCaretText( String str ){
+	current = textArea.getCaretPosition();
+	line = textArea.getCaretLine();
+	currentOffset = current - textArea.getLineEndOffset( line-1 );
+	//Macros.message( view, "CurrentOffset:" + currentOffset  );
+	
+	textArea.selectLine();
+	Selection[] selections = textArea.getSelection();
+	Selection lineSel = selections[0];
+	lineText = textArea.getSelectedText( lineSel );
+	//Macros.message( view, "LineText:" + lineText );
+	
+	beforeText = lineText.substring( 0, currentOffset );
+	afterText = lineText.substring( currentOffset );
+	
+	//Macros.message( view, "Before:" + beforeText );
+	//Macros.message( view, "After:"+ afterText );
+	Macros.message( view, "Before setting selected text" );
+	textArea.setSelectedText( lineSel, beforeText + str + afterText );
+	Macros.message( view, "After setting selected text" );
+	textArea.selectNone();
+	textArea.setCaretPosition( current );
+}
+
+if( buffer.isReadOnly() ){
+	Macros.error( view, "Buffer is read-only, and cannot be modified" );
+} else {
+	showDialog( view ); //to show dialog uncomment this and comment next line
+}

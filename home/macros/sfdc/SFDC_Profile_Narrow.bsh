@@ -1,0 +1,30 @@
+// This is a temporary macro. First, check over the
+// commands to make sure this is what you intended.
+// Then, to run this macro, switch to the buffer
+// where you would like to execute it and press C+m C+p.
+SearchAndReplace.setSearchString("<(userPermissions|fieldPermissions|loginIpRanges|recordTypeVisibilities|userPermissions|objectPermissions|tabVisibilities)>");
+SearchAndReplace.setReplaceString("†$0");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setWholeWord(true);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new DirectoryListSet("/Users/proth/Documents/work/sfdc/projects/ffn/dev/sfdc/src/profiles","*.*",true));
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("</(userPermissions|fieldPermissions|loginIpRanges|recordTypeVisibilities|userPermissions|objectPermissions|tabVisibilities)>");
+SearchAndReplace.setReplaceString("‡$0");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setWholeWord(true);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new DirectoryListSet("/Users/proth/Documents/work/sfdc/projects/ffn/dev/sfdc/src/profiles","*.*",true));
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("†[^†‡]+‡[^\\n>]+>\\s+");
+SearchAndReplace.setReplaceString("");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setWholeWord(true);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new DirectoryListSet("/Users/proth/Documents/work/sfdc/projects/ffn/dev/sfdc/src/profiles","*.*",true));
+SearchAndReplace.replaceAll(view);

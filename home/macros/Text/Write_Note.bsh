@@ -1,0 +1,36 @@
+import java.text.SimpleDateFormat;
+
+/**
+ * Count_Chars.bsh.bsh - Counts the characters in a selection
+ * 
+ * $Id$
+ */
+
+void start( View view ){
+	String result;
+	
+	result = writeMessage();
+	textArea.setSelectedText( result );
+}
+
+String writeMessage(){
+	String name="Paul";
+
+	String LINESEP=buffer.getProperty( buffer.LINESEP );
+	StringBuilder result = new StringBuilder();
+	
+	//result.append( "line1" ).append( LINESEP ).append( "line2" );
+	Date d = new Date();
+	SimpleDateFormat df = new SimpleDateFormat( "EE, MMM d - h:m a" );
+	dateStr = df.format( d );
+	result.append( "On " + dateStr + LINESEP + name + " noted: " );
+	return( result.toString() );
+}
+
+if( buffer.isReadOnly() ){
+	Macros.error( view, "Buffer is read-only, and cannot be modified" );
+} else {
+	//showDialog( view ); //to show dialog uncomment this and comment next line
+	start( view );    //to not show dialog, uncomment this and comment prev line
+}
+

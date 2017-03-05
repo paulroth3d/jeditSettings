@@ -1,0 +1,166 @@
+/*
+ * CHECKS the API for a specific string
+ * 
+ * $Id$
+ */
+
+import gnu.regexp.*;
+import javax.swing.border.*;
+
+void showDialog( View view ) {
+  
+  title = "Add or Remove Block Decorators";
+  
+  String defaultPackage = "/Users/proth/Documents/work/modelmetrics/projects/gfrs/dev/salesforce_ant_22.0/sample/GFRS";
+  
+  dialog = new JDialog(view, title, false);
+  content = new JPanel(new BorderLayout());
+  content.setBorder(new EmptyBorder(5, 5, 5, 5));
+  dialog.setContentPane(content);
+  
+  opPanel = new JPanel( new GridLayout(3,1) );
+  
+  prPanel = new JPanel(new FlowLayout());
+  prLabel = new JLabel("String: ");
+  prField = new JTextField( "", 10 );
+  prPanel.add(prLabel);
+  prPanel.add(prField);
+  
+  dlPanel = new JPanel( new FlowLayout());
+  ldLabel = new JLabel("Package: ", 10);
+  ldField = new JTextField( defaultPackage, 10 );
+  dlPanel.add(ldLabel);
+  dlPanel.add(ldField);
+  
+  opPanel.add( prPanel );
+  opPanel.add( dlPanel );
+  
+  content.add(opPanel, BorderLayout.CENTER);
+  
+  buttonPanel = new JPanel(new GridLayout(1, 3));
+  buttonPanel.setBorder( new EmptyBorder(5, 0, 0, 0));
+  
+  findButton = new JButton("Find");
+  cancelButton = new JButton("Cancel");
+  
+  buttonPanel.add(findButton);
+  buttonPanel.add(cancelButton);
+  
+  content.add(buttonPanel, BorderLayout.SOUTH);
+  
+  findButton.addActionListener(this);
+  cancelButton.addActionListener(this);
+  
+  dialog.getRootPane().setDefaultButton(findButton);
+  
+  actionPerformed(e) {
+    this.dialog.dispose();
+    
+    cmd = e.getActionCommand();
+    
+    if(cmd.equals("Find")){
+		//decryptBuffer(this.pwField.getPassword());
+		findInAPI( view, this.prField.getText(), this.ldField.getText() );
+    }
+    
+    return;
+  }
+  
+  dialog.pack();
+  dialog.setLocationRelativeTo(view);
+  dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+  dialog.setVisible(true);
+}
+
+void showHypersearchWait( View view ) {
+  
+  title = "Click OK when Hypersearch done";
+  
+  dialog = new JDialog(view, title, false);
+  content = new JPanel(new BorderLayout());
+  content.setBorder(new EmptyBorder(5, 5, 5, 5));
+  dialog.setContentPane(content);
+  
+  opPanel = new JPanel( new GridLayout(3,1) );
+  
+  prPanel = new JPanel(new FlowLayout());
+  prLabel = new JLabel( title );
+  prPanel.add(prLabel);
+  
+  opPanel.add( prPanel );
+  
+  content.add(opPanel, BorderLayout.CENTER);
+  
+  buttonPanel = new JPanel(new GridLayout(1, 1));
+  buttonPanel.setBorder( new EmptyBorder(5, 0, 0, 0));
+  
+  doneButton = new JButton("Done");
+  
+  buttonPanel.add(doneButton);
+  
+  content.add(buttonPanel, BorderLayout.SOUTH);
+  
+  doneButton.addActionListener(this);
+  
+  dialog.getRootPane().setDefaultButton(doneButton);
+  
+  actionPerformed(e) {
+    this.dialog.dispose();
+    
+    cmd = e.getActionCommand();
+    
+    hypersearchDone( view );
+    
+    return;
+  }
+  
+  dialog.pack();
+  dialog.setLocationRelativeTo(view);
+  dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+  dialog.setVisible(true);
+}
+
+void findInAPI( View view, String search, String packagePath ){
+	Log.log( Log.DEBUG, BeanShell.class, "FindInAPI called[" + search + "][" + packagePath + "]" );
+	
+	SearchAndReplace.setSearchString( "\\b" + search );
+	SearchAndReplace.setAutoWrapAround(true);
+	SearchAndReplace.setReverseSearch(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new DirectoryListSet(packagePath,"*",true));
+	SearchAndReplace.hyperSearch(view,false);
+	
+	showHypersearchWait(view);
+}
+
+void hypersearchDone( View view ){
+	Macros.getMacro("Misc/HyperSearch_Results_to_Buffer").invoke(view);
+	/*
+	SearchAndReplace.setSearchString("/profiles/[^\\n:]+:\\d+:");
+	SearchAndReplace.setReplaceString("†");
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+	SearchAndReplace.replaceAll(view);
+	
+	SearchAndReplace.setSearchString("^[^\\n†]+†[^\\n]*\\n");
+	SearchAndReplace.setReplaceString("");
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+	SearchAndReplace.replaceAll(view);
+	*/
+	
+	SearchAndReplace.setSearchString(" :\\d+: [^\\n+]+");
+	SearchAndReplace.setReplaceString("");
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+	SearchAndReplace.replaceAll(view);
+}
+
+showDialog( view );

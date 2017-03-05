@@ -1,0 +1,30 @@
+
+
+void start( View view ){
+	
+	JEditBuffer buffer = textArea.getBuffer();
+	Selection[] selections = textArea.getSelection();
+	Selection select;
+	
+	if( selections.length > 1 ){
+		Macros.message( view, "This only works with a single selection" );
+	} else if( selections.length < 1 ){
+		Macros.message( view, "Please select an file.method as done through Find File Context (cfc)" );
+	} else {
+		String selectionStr = textArea.getSelectedText( selections[0] );
+		selectionStr = selectionStr.replaceAll( "#", "" );
+		String strToSearch = "###" + selectionStr;
+		//Macros.message( view, "get selection found:" + strToSearch );
+		
+		SearchAndReplace.setSearchString( strToSearch );
+		SearchAndReplace.setAutoWrapAround(true);
+		SearchAndReplace.setReverseSearch(false);
+		SearchAndReplace.setWholeWord(false);
+		SearchAndReplace.setIgnoreCase(true);
+		SearchAndReplace.setRegexp(false);
+		SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+		SearchAndReplace.find(view);
+	}
+}
+
+start( view );

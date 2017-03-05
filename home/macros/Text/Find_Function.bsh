@@ -1,0 +1,121 @@
+/*
+ * Rem_Block_Decorators.bsh - Removes the javadoc stars on a selection of text
+ * 
+ * $Id$
+ */
+
+import gnu.regexp.*;
+import javax.swing.border.*;
+
+String getFirstSelection(){
+	Selection[] selections = textArea.getSelection();
+	Selection select;
+	String selected = null;
+	
+	if( selections == null || selections.length < 1 ){
+	} else {
+		select = selections[0];
+		selected = textArea.getSelectedText( select );
+	}
+	
+	return( selected );
+}
+
+String createDefaultQuery( String functionName ){
+	return( "function[ \\t]*" + functionName + "[ \\t]*\\(" );
+}
+
+void showDialog( View view ) {
+  
+  String selectedFunction = getFirstSelection();
+  if( selectedFunction == null ) selectedFunction = "";
+  
+  String functionQuery = createDefaultQuery(selectedFunction);
+  
+  title = "Add or Remove Block Decorators";
+  
+  dialog = new JDialog(view, title, false);
+  content = new JPanel(new BorderLayout());
+  content.setBorder(new EmptyBorder(5, 5, 5, 5));
+  dialog.setContentPane(content);
+  
+  opPanel = new JPanel( new GridLayout(1,1) );
+  
+  in1Panel = new JPanel(new GridLayout(1, 2));
+  in1Label = new JLabel("Query: ");
+  in1Field = new JTextField( functionQuery );
+  in1Panel.add(in1Label);
+  in1Panel.add(in1Field);
+  
+  opPanel.add( in1Field );
+  
+  content.add(opPanel, BorderLayout.CENTER);
+  
+  buttonPanel = new JPanel(new GridLayout(1, 3));
+  buttonPanel.setBorder( new EmptyBorder(5, 0, 0, 0));
+  
+  addButton = new JButton("OK");
+  cancelButton = new JButton("Cancel");
+  
+  buttonPanel.add(addButton);
+  buttonPanel.add(cancelButton);
+  
+  content.add(buttonPanel, BorderLayout.SOUTH);
+  
+  addButton.addActionListener(this);
+  cancelButton.addActionListener(this);
+  
+  dialog.getRootPane().setDefaultButton(addButton);
+  
+  actionPerformed(e) {
+    this.dialog.dispose();
+    
+    cmd = e.getActionCommand();
+    
+    if(cmd.equals("OK")){
+		//decryptBuffer(this.pwField.getPassword());
+		start( view, this.in1Field.getText() );
+    }
+    
+    return;
+  }
+  
+  dialog.pack();
+  dialog.setLocationRelativeTo(view);
+  dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+  dialog.setVisible(true);
+}
+
+void start( View view, String query ){
+	this.view = view;
+	
+	//Log.log( Log.DEBUG, BeanShell.class, "query before:" + query );
+	//query = regexClean( query );
+	//Log.log( Log.DEBUG, BeanShell.class, "query after:" + query );
+	searchQuery( query );
+}
+
+void searchQuery( String query ){
+	SearchAndReplace.setSearchString(query);
+	SearchAndReplace.setAutoWrapAround(true);
+	SearchAndReplace.setReverseSearch(false);
+	SearchAndReplace.setIgnoreCase(false);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+	SearchAndReplace.find(view);
+}
+
+String regexClean( String str ){
+	str = str.replace( "\\", "\\\\" );
+	str = str.replace( "*", "\\*" );
+	return( str );
+}
+
+/*
+if(buffer.isReadOnly()){
+	Macros.error( view, "Buffer is read-only." );
+} else {
+	showDialog(view);
+}
+*/
+showDialog(view);

@@ -1,0 +1,752 @@
+/**
+ * editSql.bsh.bsh - Converts a sql statement into php query factory functions
+ * and php display and editing functions. <BR />
+ * <BR />
+ * This provides for VERY rapid prototyping as the script reads a table structure
+ * and creates functions for constructing queries to select, update and delete
+ * records from that table, AND creates simple div tags that display the information
+ * for a specific row, or html inputs for editing or adding a new record.<BR />
+ * <BR />
+ * Please note: at this time, the generated code requires the coder to review
+ * the primary keys. Hopefully, this will be completed sometime soon. However,
+ * all that is needed is to change a param tag to a return tag for select statements,
+ * and cut and paste the WHERE clauses to provide the correct effect.<BR />
+ * <BR />
+ * This also cannot generate the correct labels for the table fields, as it only
+ * has the names of the table fields (and not a verbose description of what they
+ * mean). As such, these need to be added by hand.
+ * @version 0.6
+ * $Id$
+ */
+
+import gnu.regexp.*;
+import javax.swing.border.*;
+
+void showDialog( View view ){
+	title = "Which type of SQL";
+	
+	String[] sqlTypes = new String[1];
+	sqlTypes[0] = "MySQL";
+	
+	dialog = new JDialog( view, title, false ); //defines the parent, title, and whether other dialogs can be active at the same time
+	content = new JPanel( new BorderLayout() );
+	content.setBorder( new EmptyBorder( 5,5,5,5 ) );
+	dialog.setContentPane( content );
+	
+	formPanel = new JPanel( new GridLayout( 1,1 )); //defines the form as having only one input
+	
+	op1Panel = new JPanel( new GridLayout( 1,2 )); //defines the panel with a label and a field
+	op1Label = new JLabel( "SQL Type:" );
+	op1Field = new JComboBox( sqlTypes );
+	op1Panel.add( op1Label );
+	op1Panel.add( op1Field );
+	
+	formPanel.add( op1Panel ); //binds the panel with the input to the form
+	
+	content.add( formPanel, BorderLayout.CENTER ); //binds the form to the dialog, in the center
+	
+	buttonPanel = new JPanel(new GridLayout(1, 2));
+	buttonPanel.setBorder( new EmptyBorder(5, 0, 0, 0));
+	
+	runButton = new JButton( "Run" );//defines the text on the button to Run
+	cancelButton = new JButton( "Cancel" ); // ditto for Cancel
+	
+	buttonPanel.add( runButton );
+	buttonPanel.add( cancelButton );
+	
+	content.add( buttonPanel, BorderLayout.SOUTH );
+	
+	runButton.addActionListener( this );
+	cancelButton.addActionListener( this );
+	
+	dialog.getRootPane().setDefaultButton( runButton ); //defines the default button that will run when enter is pressed
+	
+	actionPerformed( e ){
+		this.dialog.dispose(); //closes the dialog
+		
+		cmd = e.getActionCommand();
+		
+		if( cmd.equals( "Run" ) ){ //if the run button was pressed
+			int index = op1Field.getSelectedIndex();
+			String sqlType = sqlTypes[ op1Field.getSelectedIndex() ];
+			start( view, sqlType );
+		} else {
+			
+		}
+	}
+	
+	dialog.pack();
+	dialog.setLocationRelativeTo( view );
+	dialog.setDefaultCloseOperation( JDialog.DISPOSE_ON_CLOSE );
+	dialog.setVisible( true );
+	
+	return;
+}
+
+SQLTable( String dbp, String namep ) {
+	this.db = dbp;
+	this.name = namep;
+	
+	this.fields = new Vector();
+	/* this.fields.add( "something" );
+	this.fields.add( "else" ); */
+	
+	add( str ){
+		this.fields.add( str );
+		//Macros.message( view, "this.fields.count:" + this.fields.size() );
+	}
+	
+	addKey( key ){
+		//Macros.message( view, "isKey called[" + key + "]" );
+		myFields = this.fields.toArray();
+		for( int i = 0; i < myFields.length; i++ ){
+			field = this.myFields[i];
+			//Macros.message( view, "field checked[" + field.name + "]" );
+			if( field.name.equals( key ) ){
+				//Macros.message( view, "Found key field:" + key );
+				
+				newField = SQLField( field.name, field.type, true );
+				if( !this.fields.remove( field ) ){
+					Macros.message( view, "could not remove field[" + key + "]" );
+				}
+				this.fields.add( 0, newField );
+				
+				return( true );
+			}
+		}
+		//Macros.message( view, "Could NOT FIND key field" );
+		return( false );
+	}
+	
+	toString(){
+		StringBuilder result = new StringBuilder( "<table " );
+		result.append( "name='" ).append( this.name ).append( "' " );
+		result.append( "db='" ).append( this.db ).append( "' " );
+		result.append( ">" );
+		
+		//Macros.message( view, "table.toString called" );
+		fieldArray = this.fields.toArray();
+		//Macros.message( view, "fieldArray.length:" + fieldArray.length );
+		
+		for( int i = 0; i < fieldArray.length; i++ ){
+			myField = fieldArray[i];
+			//Macros.message( view, "myField.toString:" + myField.toString() );
+			result.append( myField.toString() );
+		}
+		result.append( "</table>" );
+		return( result.toString() );
+	}
+	
+	return( this );
+}
+
+SQLField( String namep, String typep, int lengthp, boolean isKeyp ) {
+	this.name = namep;
+	this.type = typep;
+	this.isKey = isKeyp;
+	this.length = lengthp;
+	
+	toString(){
+		//Macros.message( view, "toString called" );
+		return( "<field " + (this.isKeyp?"KEY ":"") + "name='" + this.name + "' type='" + this.type + "' />" );
+	}
+	
+	return( this );
+}
+
+void start( View view, String sqlType ){
+	//Macros.message( view, "starting now" );
+	this.view = view;
+	
+	//Macros.message( view, sqlType );
+	
+	Selection[] selections = textArea.getSelection();
+	Selection select;
+	String sqlText;
+	
+	if( selections == null || selections.length < 1 ){
+		Macros.error( view, "No lines selected" );
+		return( null );
+	} else if( selections.length > 1 ){
+		Macros.error( view, "Macro does not support multiple selections" );
+	}
+	
+	select = selections[0];
+	sqlText = textArea.getSelectedText( select );
+	
+	table = cleanMySQL( sqlText );
+	//Macros.message( view, table.toString() );
+	
+	StringBuilder result = new StringBuilder();
+	printGetQuery( table, result );
+	//Macros.message( view, result.toString() );
+	
+	result.append( "\n" );
+	printInsertQuery( table, result );
+	
+	result.append( "\n" );
+	//Macros.message( view, "before printupdatequery" );
+	printUpdateQuery( table, result );
+	//Macros.message( view, result.toString() );
+	
+	result.append( "\n" );
+	//Macros.message( view, "before printdeletequery" );
+	printDeleteQuery( table, result );
+	
+	result.append( "\n" );
+	//Macros.message( view, "before printShow" );
+	printShow( table, result );
+	//Macros.message( view, result.toString() );
+	
+	result.append( "\n" );
+	//Macros.message( view, "before printEdit" );
+	printEdit( table, result );
+	
+	newBuffer = jEdit.newFile( view );
+	area = view.getTextArea();
+	area.setText( result.toString() );
+	
+	//textArea.setSelectedText( select, result );
+}
+
+cleanMySQL( String sql ){
+	RE re = null;
+	REMatch match = null;
+	REMatch[] matches = null;
+	
+	sql = sql.replace( '`', '\'' );
+	
+	//--get the name of the table and the database
+	try {
+		re = new RE( "table\\s*'([^\\n']+)'\\.'([^\\n']+)'", RE.REG_ICASE );
+	} catch( REException err ){
+		Macros.error( view, "Error with table regex" );
+	}
+	
+	REMatch match = re.getMatch( sql );
+	if( match == null ){
+		Macros.error( view, "Could not find db or table" );
+	}
+	table = SQLTable( match.toString(1), match.toString(2) );
+	
+	//--get the names and types of the fields.
+	try {
+		re = new RE( "\\n\\s*'([^\\n']+)'\\s([^\\n,]+)," );
+	} catch( REException err ){
+		Macros.error( view, "Error with field regex" );
+	}
+	
+	matches = re.getAllMatches( sql );
+	
+	if( matches == null || matches.length < 1 ){
+		Macros.error( view, "Could not find any fields for the table" );
+	}
+	
+	for( int i = 0; i < matches.length; i++ ){
+		match = matches[i];
+		table.add( SQLField( match.toString(1), convertDataType( match.toString(2) ), false ) );
+	}
+	
+	//--get the names of the primary keys.
+	try {
+		re = new RE( "primary\\s*key\\s*[^\\n\\(]+\\(([^\\n\\)]+)", RE.REG_ICASE );
+	} catch( REException err ){
+		Macros.error( view, "Error with the primary key regex" );
+	}
+	
+	match = re.getMatch( sql );
+	if( match == null ){
+		Macros.error( view, "Could not determine the primary keys" );
+	} else {
+		String primaryKeyStr = match.toString(1);
+		primaryKeyStr = primaryKeyStr.replace( "'", "" );
+		//Macros.message( view, "primary keys[" + primaryKeyStr + "]" );
+		
+		try {
+			re = new RE( "([-a-zA-Z0-9_]+)\\s*,?" );
+		} catch( REException err ){
+			Macros.error( view, "Error with the primary key sorter regex" );
+		}
+		
+		matches = re.getAllMatches( primaryKeyStr );
+		if( matches == null || matches.length < 1 ){
+			Macros.error( view, "Error occurred while finding primary keys\n[" + primaryKeyStr + "]" );
+		} else {
+			//Macros.message( view, "before adding all the keys" );
+			for( int i = 0; i < matches.length; i++ ){
+				String key = matches[i].toString(1);
+				//Macros.message( view, "Found primary key[" + key + "]" );
+				table.addKey( key );
+			}
+		}
+	}
+	
+	//Macros.message( view, table.toString() );
+	return( table );
+}
+
+String convertDataType( String type ){
+	type = type.toLowerCase();
+	//Macros.message( view, "type[" + type + "]" );
+	if( type.startsWith( "char" ) ||
+		type.startsWith( "varchar" ) ||
+		type.startsWith( "enum" ) ||
+		type.startsWith( "binary" ) ||
+		type.startsWith( "text" ) ||
+		type.startsWith( "set" ) ||
+		type.startsWith( "nchar" ) ||
+		type.startsWith( "tinytext" )){
+			return( "string" );
+	} else if( type.startsWith( "longtext" ) ||
+		type.startsWith( "mediumtext" ) ){
+			return( "bigstring" );
+	} else if( type.startsWith( "bit" ) ||
+		type.startsWith( "bool" ) || //includes boolean
+		type.startsWith( "tinyint(1)" ) ){
+			return( "boolean" );
+	} else if( type.startsWith( "int" ) ||
+		type.startsWith( "bigint" ) ||
+		type.startsWith( "mediumint" ) ||
+		type.startsWith( "unsigned" ) ||
+		type.startsWith( "smallint" ) ||
+		type.startsWith( "tinyint" ) ){
+			return( "integer" );
+	} else if( type.startsWith( "dec" ) ||
+		type.startsWith( "numeric" ) ||
+		type.startsWith( "double" ) ||
+		type.startsWith( "float" ) ||
+		type.startsWith( "long" ) ){
+			return( "float" );
+	} else if( type.startsWith( "blob" ) ||
+		type.startsWith( "longblob" ) ||
+		type.startsWith( "mediumblob" ) ||
+		type.startsWith( "tinyblob" ) ){
+			return( "blob" );
+	} else if( type.startsWith( "datetime" ) ){
+		return( "datetime" );
+	} else if( type.startsWith( "time" ) ){
+		return( "time" );
+	} else if( type.startsWith( "date" ) ){
+		return( "date" );
+	} else if( type.startsWith( "year" ) ){
+		return( "year" );
+	} else {
+		Macros.error( view, "unknown type found [" + type + "]" );
+	}
+}
+
+boolean typeHasQuotes( String type ){
+	if( type.equals( "boolean" ) ){
+		return( false );
+	} else if( type.equals( "integer" ) ){
+		return( false );
+	} else if( type.equals( "float" ) ){
+		return( false );
+	} else {
+		return( true );
+	}
+}
+
+StringBuilder makeInput( String name, String type, StringBuilder result ){
+	//Macros.message( view, "make input called" );
+	if( type.equals( "hidden" ) ){
+		result.append( "<INPUT TYPE='hidden' NAME='" + name + "' value='$" + name + "' />" );
+	} else if( type.equals( "bigstring" ) ){
+		result.append( "<BR /><TEXTAREA ROWS='10' COLS='40' NAME='" + name + "'>$" + name + "</TEXTAREA>" );
+	} else if( type.equals( "string" ) ){
+		result.append( "<INPUT TYPE='textfield' NAME='" + name + "' value='$" + name + "' />" );
+	} else if( type.equals( "boolean" ) ){
+		result.append( "<INPUT TYPE='checkbox' NAME='" + name + "' value='true' \" . (if($" + name + "?\"CHECKED='CHECKED'\":'')) . \" />" );
+	} else if( type.equals( "integer" ) || type.equals( "float" ) ){
+		result.append( "<INPUT TYPE='textfield' NAME='" + name + "' value='$" + name + "' />" );
+	} else if( type.equals( "datetime" ) ||
+		type.equals( "time" ) ||
+		type.equals( "date" ) ||
+		type.equals( "year" ) ){
+			result.append( "<!-- change to calendar input --><INPUT TYPE='textfield' NAME='" + name + "' value='$" + name + "' />" );
+	} else {
+		result.append( "<INPUT TYPE='textfield' NAME='" + name + "' value='$" + name + "' />" );
+	}
+	return( result );
+}
+
+StringBuilder printKeyWhere( table, StringBuilder result ){
+	//Macros.message( view, "start printKeyWhere" );
+	fields = table.fields.toArray();
+	
+	field = fields[0];
+	result.append( field.name ).append( '=' );
+	if( typeHasQuotes( field.type ) ){
+		result.append( "'$" ).append( field.name ).append( "'" );
+	} else {
+		result.append( "$" ).append( field.name );
+	}
+	for( int i = 1; i < fields.length; i++ ){
+		field = fields[i];
+		if( field.isKey ){
+			result.append( " AND " ).append( field.name ).append( "=" );
+			if( typeHasQuotes( field.type ) ){
+				result.append( "'$" ).append( field.name ).append( "'" );
+			} else {
+				result.append( "$" ).append( field.name );
+			}
+		}
+	}
+	//Macros.message( view, "end of printKeyWhere" );
+	return( result );
+}
+
+StringBuilder printInsertQuery( table, StringBuilder result ){
+	//Macros.message( view, "before printInsertQuery" );
+	result.append( "/**\n" );
+	result.append( " *\tInserts a new record into " ).append( table.name ).append ("\n");
+	
+	fields = table.fields.toArray();
+	//Macros.message( view, "fields.length:" + fields.length );
+	for( int i = 0; i < fields.length; i++ ){
+		field = fields[i];
+		result.append( " *\t@param " ).append( field.name ).append( " (" ).append( field.type ).append( ")\n" );
+	}
+	result.append( "**/\n" );
+	
+	//Macros.message( view, "after printjavadoc" );
+	fields = table.fields.toArray();
+	result.append( "public static function insert_" ).append( table.name ).append( " ( " );
+	
+	field = fields[0];
+	result.append( "$" ).append( field.name );
+	
+	for( int i = 1; i < fields.length; i++ ){
+		field = fields[i];
+		result.append( ", $" ).append( field.name );
+	}
+	
+	result.append( "){\n" );
+	result.append( "\treturn( \"INSERT INTO " ).append( table.name ).append( " ( " );
+	field = fields[0];
+	result.append( field.name );
+	for( int i = 1; i < fields.length; i++ ){
+		field = fields[i];
+		result.append( ", " ).append( field.name );
+	}
+	result.append( " )\n" );
+	
+	result.append( "\tVALUES (" );
+	hasField = false;
+	for( int i = 0; i < fields.length; i++ ){
+		field = fields[i];
+		if( hasField ){
+			result.append( ',' );
+		} else {
+			
+		}
+		if( typeHasQuotes( field.type ) ){
+			result.append( "'$" ).append( field.name ).append( '\'' );
+		} else {
+			result.append( "$" ).append( field.name );
+		}
+		hasField = true;
+	}
+	result.append( ");\" );\n" );
+	result.append( "}\n" );
+	return( result );
+}
+
+StringBuilder printGetQuery( table, StringBuilder result ){
+	//Macros.message( view, "before printGetQuery" );
+	result.append( "/**\n" );
+	result.append( " *\tFinds a particular row in " ).append( table.name ).append ("\n");
+	
+	fields = table.fields.toArray();
+	//Macros.message( view, "fields.length:" + fields.length );
+	for( int i = 0; i < fields.length; i++ ){
+		field = fields[i];
+		if( field.isKey ){
+			result.append( " *\t@param " );
+		} else {
+			result.append( " *\t@return " );
+		}
+		result.append( field.name ).append( " (" ).append( field.type ).append( ")\n" );
+	}
+	result.append( "**/\n" );
+	
+	//Macros.message( view, "after printjavadoc" );
+	fields = table.fields.toArray();
+	result.append( "public static function get_" ).append( table.name ).append( " ( " );
+	
+	field = fields[0];
+	result.append( "$" ).append( field.name );
+	
+	for( int i = 1; i < fields.length; i++ ){
+		field = fields[i];
+		if( field.isKey ){
+			result.append( ", $" ).append( field.name );
+		}
+	}
+	
+	result.append( ", $queryMore ){\n" );
+	result.append( "\treturn( \"SELECT " );
+	
+	//Macros.message( view, "after argument list" );
+	boolean hasField = false;
+	field = fields[0];
+	if( !field.isKey ){
+		result.append( field.name );
+		hasField = true;
+	}
+	for( int i = 1; i < fields.length; i++ ){
+		field = fields[i];
+		if( !field.isKey ){
+			if( hasField ){
+				result.append(", ");
+			}
+			result.append( field.name );
+			hasField = true;
+		}
+	}
+	
+	//Macros.message( view, "before FROM" );
+	result.append( "\n\tFROM " ).append( table.name );
+	result.append( "\n\tWHERE " );
+	printKeyWhere( table, result );
+	result.append( " $queryMore;\" );\n" );
+	result.append( "}\n" );
+	return( result );
+}
+
+StringBuilder printUpdateQuery( table, StringBuilder result ){
+	//Macros.message( view, "before printJavadoc" );
+	result.append( "/**\n" );
+	result.append( " *\tUpdates a particular row in " ).append( table.name ).append ("\n");
+	
+	fields = table.fields.toArray();
+	//Macros.message( view, "fields.length:" + fields.length );
+	for( int i = 0; i < fields.length; i++ ){
+		field = fields[i];
+		result.append( " *\t@param " ).append( field.name ).append( " (" ).append( field.type ).append( ")\n" );
+	}
+	result.append( "**/\n" );
+	//Macros.message( view, "after printjavadoc" );
+	fields = table.fields.toArray();
+	result.append( "public static function update_" ).append( table.name ).append( " ( " );
+	
+	field = fields[0];
+	result.append( "$" ).append( field.name );
+	
+	for( int i = 1; i < fields.length; i++ ){
+		field = fields[i];
+		result.append( ", $" ).append( field.name );
+	}
+	
+	result.append( " ){\n" );
+	result.append( "\treturn( \"UPDATE " ).append( table.name ).append( "\n" );
+	
+	hasField = false;
+	field = fields[0];
+	
+	for( int i = 0; i < fields.length; i++ ){
+		field = fields[i];
+		if( !field.isKey ){
+			if( hasField ){
+				result.append( "\t," );
+			} else {
+				result.append( "\tSET " );
+			}
+			result.append( field.name ).append( "=" );
+			if( typeHasQuotes( field.type ) ){
+				result.append( "'$" ).append( field.name ).append( "'\n" );
+			} else {
+				result.append( "$" ).append( field.name ).append( "\n" );
+			}
+			hasField = true;
+		}
+	}
+	result.append( "\tWHERE " );
+	printKeyWhere( table, result );
+	result.append( ";\" );\n" );
+	result.append( "}\n" );
+	return( result );
+}
+
+StringBuilder printDeleteQuery( table, StringBuilder result ){
+	//Macros.message( view, "start deletequery printJavadoc" );
+	result.append( "/**\n" );
+	result.append( " *\tDeletes a row from " + table.name + "\n");
+	
+	fields = table.fields.toArray();
+	//Macros.message( view, "fields.length:" + fields.length );
+	for( int i = 0; i < fields.length; i++ ){
+		field = fields[i];
+		if( field.isKey ){
+			result.append( " *\t@param " ).append( field.name ).append( " (" ).append( field.type ).append( ")\n" );
+		}
+	}
+	result.append( "**/\n" );
+	//Macros.message( view, "after deletequery printjavadoc" );
+	fields = table.fields.toArray();
+	result.append( "public static function delete_" ).append( table.name ).append( "( " );
+	
+	hasField = false;
+	field = fields[0];
+	for( int i = 0; i < fields.length; i++ ){
+		field = fields[i];
+		if( field.isKey ){
+			if( hasField ){
+				result.append( ", " );
+			}
+			result.append( '$' ).append( field.name );
+			hasField = true;
+		}
+	}
+	
+	result.append( " ){\n" );
+	result.append( "\treturn( \"DELETE FROM " ).append( table.name ).append( "\n" );
+	result.append( "\tWHERE " );
+	
+	printKeyWhere( table, result );
+	result.append( ";\" );\n" );
+	result.append( "}\n" );
+	return( result );
+}
+
+StringBuilder printShow( table, StringBuilder result ){
+	fields = table.fields.toArray();
+	
+	count = 0;
+	hasField = false;
+	
+	result.append( "//show_" ).append( table.name ).append( "(" );
+	for( int i = 0; i < fields.length; i++ ){
+		field = fields[i];
+		if( hasField ){
+			result.append( ',' );
+		}
+		if( field.isKey ){
+			result.append( " $" ).append( field.name );
+		} else {
+			//result.append( " $row[" ).append( count++ ).append( "]" );
+			result.append( " $row['" ).append( field.name ).append( "']" );
+		}
+		
+		hasField = true;
+	}
+	result.append( " );\n\n" );
+	
+	printJavadoc( table, "Shows the values in php " + table.name, result );
+	//Macros.message( view, "after printjavadoc" );
+	
+	result.append( "public static function show_" ).append( table.name ).append( " ( " );
+	
+	field = fields[0];
+	result.append( "$" ).append( field.name );
+	
+	for( int i = 1; i < fields.length; i++ ){
+		field = fields[i];
+		result.append( ", $" ).append( field.name );
+	}
+	
+	result.append( " ){\n" );
+	result.append( "\techo( \"\n" );
+	result.append( "\t<div id='content'>\n" );
+	
+	for( int i = 0; i < fields.length; i++ ){
+		field = fields[i];
+		if( !field.isKey ){
+			result.append( "\t\t: $" ).append( field.name ).append( "<BR />\n" );
+		}
+	}
+	
+	result.append( "\t</div>\\n\" );\n" );
+	result.append( "}\n" );
+}
+
+StringBuilder printEdit( table, StringBuilder result ){
+	fields = table.fields.toArray();
+	
+	result.append( "/*\n" );
+	
+	count = 0;
+	//first extract the information we gathered
+	result.append( "$ext->extract( $_POST, false" );
+	for( int i = 0; i < fields.length; i++ ){
+		field = fields[i];
+		if( !field.isKey ){
+			result.append( ", '" ).append( field.name ).append( '\'' );
+		}
+	}
+	result.append( " );\n" );
+	
+	//then check to ensure that we only provide the old DB information if it was not entered
+	for( int i = 0; i < fields.length; i++ ){
+		field = fields[i];
+		if( !field.isKey ){
+			//result.append( "$ext->checkVar( '" ).append( field.name ).append( "', $row[" ).append( i ).append( "] );\n" );
+			result.append( "$ext->checkVar( '" ).append( field.name ).append( "', $row['" ).append( field.name ).append( "'] );\n" );
+		}
+	}
+	
+	hasField = false;
+	result.append( "edit_" ).append( table.name ).append( "(" );
+	for( int i = 0; i < fields.length; i++ ){
+		field = fields[i];
+		if( hasField ){
+			result.append( ',' );
+		}
+		result.append( " $" ).append( field.name );
+		hasField = true;
+	}
+	result.append( " );\n*/\n" );
+	
+	printJavadoc( table, "Edits or inserts a new record in " + table.name, result );
+	//Macros.message( view, "after printjavadoc" );
+	
+	result.append( "public static function edit_" ).append( table.name ).append( " ( " );
+	
+	field = fields[0];
+	result.append( "$" ).append( field.name ).append( "=''" );
+	
+	for( int i = 1; i < fields.length; i++ ){
+		field = fields[i];
+		result.append( ", $" ).append( field.name ).append( "=''" );
+	}
+	
+	result.append( " ){\n" );
+	result.append( "\techo( \"\n" );
+	result.append( "\t<div id='content'>\n" );
+	
+	for( int i = 0; i < fields.length; i++ ){
+		field = fields[i];
+		result.append( "\t\t" );
+		if( field.isKey ){
+			makeInput( field.name, "hidden", result );
+		} else {
+			result.append( ": " );
+			makeInput( field.name, field.type, result );
+		}
+		result.append( "<BR />\n" );
+	}
+	
+	result.append( "\t</div>\\n\" );\n" );
+	result.append( "}\n" );
+}
+
+StringBuilder printJavadoc( table, String descr, StringBuilder result ){
+	//Macros.message( view, "start printJavadoc" );
+	result.append( "/**\n" );
+	result.append( " *\t" ).append( descr ).append ("\n");
+	
+	fields = table.fields.toArray();
+	//Macros.message( view, "fields.length:" + fields.length );
+	for( int i = 0; i < fields.length; i++ ){
+		field = fields[i];
+		result.append( " *\t@param " ).append( field.name ).append( " (" ).append( field.type ).append( ")\n" );
+	}
+	result.append( "**/\n" );
+}
+
+if( buffer.isReadOnly() ){
+	Macros.error( view, "Buffer is read-only, and cannot be modified" );
+} else {
+	showDialog( view ); //to show dialog uncomment this and comment next line
+	//start( view );    //to not show dialog, uncomment this and comment prev line
+}

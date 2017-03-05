@@ -1,0 +1,107 @@
+/**
+ * clean_comments.bsh - 
+ * 
+ * $Id$
+ */
+
+import javax.swing.border.*;
+
+void showDialog( View view ){
+	title = "Write WordWrap Into Text";
+	
+	dialog = new JDialog( view, title, false ); //defines the parent, title, and whether other dialogs can be active at the same time
+	content = new JPanel( new BorderLayout() );
+	content.setBorder( new EmptyBorder( 5,5,5,5 ) );
+	dialog.setContentPane( content );
+	
+	formPanel = new JPanel( new GridLayout( 1,1 )); //defines the form as having only one input
+	
+	buttonPanel = new JPanel(new GridLayout(1, 4));
+	buttonPanel.setBorder( new EmptyBorder(5, 0, 0, 0));
+	
+	cleanBtn = new JButton( "Clean" );
+	uncleanBtn = new JButton( "Unclean" );
+	removeBtn = new JButton( "Remove" );
+	cancelBtn = new JButton( "Cancel" );
+	
+	buttonPanel.add( cleanBtn );
+	buttonPanel.add( uncleanBtn );
+	buttonPanel.add( removeBtn );
+	buttonPanel.add( cancelBtn );
+	
+	content.add( buttonPanel, BorderLayout.CENTER );
+	
+	cleanBtn.addActionListener( this );
+	uncleanBtn.addActionListener( this );
+	removeBtn.addActionListener( this );
+	cancelBtn.addActionListener( this );
+	
+	dialog.getRootPane().setDefaultButton( cleanBtn ); //defines the default button that will run when enter is pressed
+	
+	actionPerformed( e ){
+		this.dialog.dispose(); //closes the dialog
+		
+		cmd = e.getActionCommand();
+		
+		if( cmd.equals( "Clean" ) ){ //if the run button was pressed
+			start( view, true, false );
+		} else if( cmd.equals( "Unclean" ) ){
+			start( view, false, false );
+		} else if( cmd.equals( "Remove" ) ){
+			start( view, false, true );
+		}
+	}
+	
+	dialog.pack();
+	dialog.setLocationRelativeTo( view );
+	dialog.setDefaultCloseOperation( JDialog.DISPOSE_ON_CLOSE );
+	dialog.setVisible( true );
+	
+	return;
+}
+
+void start( View view, boolean clean, boolean remove ){
+	//Macros.message( view, "starting now:" + clean );
+	this.view = view;
+	
+	Selection[] selections = textArea.getSelection();
+	Selection select;
+	String selected;
+	String result;
+	
+	if( selections == null || selections.length < 1 ){
+		Macros.error( view, "No lines selected" );
+		return( null );
+	}
+	
+	for( int j = 0; j < selections.length; j++ ){
+		select = selections[j];
+		selected = textArea.getSelectedText( select );
+		
+		//Macros.message( view, selected );
+		if( remove == true ){
+			selected = selected.replaceAll( "/\\*", "" );
+			selected = selected.replaceAll( "\\*/", "" );
+		} else {
+			if( clean == true ){
+				selected = selected.replaceAll( "/\\*", "/#" );
+				//Macros.message( view, selected );
+				selected = selected.replaceAll( "\\*/", "#/" );
+			} else {
+				selected = selected.replaceAll( "/#", "/\\*" );
+				//Macros.message( view, selected );
+				selected = selected.replaceAll( "#/", "*/" );
+			}
+		}
+		//Macros.message( view, selected );
+		
+		textArea.setSelectedText( select, selected );
+	}
+}
+
+if( buffer.isReadOnly() ){
+	Macros.error( view, "Buffer is read-only, and cannot be modified" );
+} else {
+	showDialog( view ); //to show dialog uncomment this and comment next line
+	//start( view );    //to not show dialog, uncomment this and comment prev line
+}

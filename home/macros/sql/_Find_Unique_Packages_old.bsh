@@ -1,0 +1,130 @@
+import gnu.regexp.*;
+import javax.swing.border.*;
+
+void showDialog( View view ) {
+	
+	title = "Add or Remove Block Decorators";
+	
+	dialog = new JDialog(view, title, false);
+	content = new JPanel(new BorderLayout());
+	content.setBorder(new EmptyBorder(5, 5, 5, 5));
+	dialog.setContentPane(content);
+	
+	opPanel = new JPanel( new GridLayout(1,1) );
+	
+	prPanel = new JPanel(new GridLayout(1, 2));
+	prLabel = new JLabel("Line Delimiter: (Tab default)");
+	prField = new JTextField( "\t" );
+	prPanel.add(prLabel);
+	prPanel.add(prField);
+	
+	opPanel.add( prPanel );
+	
+	content.add(opPanel, BorderLayout.CENTER);
+	
+	buttonPanel = new JPanel(new GridLayout(1, 3));
+	buttonPanel.setBorder( new EmptyBorder(5, 0, 0, 0));
+	
+	runButton = new JButton("Run");
+	cancelButton = new JButton("Cancel");
+	
+	buttonPanel.add(runButton);
+	buttonPanel.add(cancelButton);
+	
+	content.add(buttonPanel, BorderLayout.SOUTH);
+	
+	runButton.addActionListener(this);
+	cancelButton.addActionListener(this);
+	
+	dialog.getRootPane().setDefaultButton(runButton);
+	
+	actionPerformed(e) {
+		this.dialog.dispose();
+		
+		cmd = e.getActionCommand();
+		
+		if(cmd.equals("Run")){
+			//decryptBuffer(this.pwField.getPassword());
+			runCode( view, this.prField.getText() );
+		}
+		
+		return;
+	}
+	
+	dialog.pack();
+	dialog.setLocationRelativeTo(view);
+	dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+	dialog.setVisible(true);
+}
+
+void runCode( View view, String lineDelim ){
+	SearchAndReplace.setSearchString(lineDelim);
+	SearchAndReplace.setReplaceString("\\n");
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setWholeWord(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+	SearchAndReplace.replaceAll(view);
+	
+	SearchAndReplace.setSearchString("^(Profile Name|Type)$");
+	SearchAndReplace.setReplaceString("");
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setWholeWord(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+	SearchAndReplace.replaceAll(view);
+	
+	SearchAndReplace.setSearchString("^([^\\n.]+[.]).+(\\n\\1.+)*");
+	SearchAndReplace.setReplaceString("‡$0");
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setWholeWord(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+	SearchAndReplace.replaceAll(view);
+	
+	SearchAndReplace.setSearchString("^[^‡\\n.]+[.].+");
+	SearchAndReplace.setReplaceString("");
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setWholeWord(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+	SearchAndReplace.replaceAll(view);
+	
+	SearchAndReplace.setSearchString("[.].+");
+	SearchAndReplace.setReplaceString("");
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setWholeWord(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+	SearchAndReplace.replaceAll(view);
+	
+	SearchAndReplace.setSearchString("‡");
+	SearchAndReplace.setReplaceString("");
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setWholeWord(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+	SearchAndReplace.replaceAll(view);
+	
+	SearchAndReplace.setSearchString("\\n");
+	SearchAndReplace.setReplaceString(lineDelim);
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setWholeWord(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+	SearchAndReplace.replaceAll(view);
+	
+}
+
+if(buffer.isReadOnly()){
+	Macros.error( view, "Buffer is read-only." );
+} else {
+	showDialog(view);
+}

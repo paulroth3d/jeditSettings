@@ -1,0 +1,230 @@
+/**
+ * Write_WordWrap.bsh.bsh - Breaks the text to set the current wordwrap into the text.
+ * 
+ * $Id$
+ */
+
+import javax.swing.border.*;
+
+void showDialog( View view ){
+	title = "Write WordWrap Into Text";
+	
+	dialog = new JDialog( view, title, false ); //defines the parent, title, and whether other dialogs can be active at the same time
+	content = new JPanel( new BorderLayout() );
+	content.setBorder( new EmptyBorder( 5,5,5,5 ) );
+	dialog.setContentPane( content );
+	/* 
+	formPanel = new JPanel( new GridLayout( 1,1 )); //defines the form as having only one input
+	
+	op1Panel = new JPanel( new GridLayout( 1,2 )); //defines the panel with a label and a field
+	op1Label = new JLabel( "label:" );
+	op1Field = new JTextField();
+	op1Panel.add( op1Label );
+	op1Panel.add( op1Field );
+	
+	formPanel.add( op1Panel ); //binds the panel with the input to the form
+	
+	content.add( formPanel, BorderLayout.CENTER ); //binds the form to the dialog, in the center
+	 */
+	buttonPanel = new JPanel(new GridLayout(1, 2));
+	buttonPanel.setBorder( new EmptyBorder(5, 0, 0, 0));
+	
+	softButton = new JButton( "Soft" );//defines the text on the button to Run
+	hardButton = new JButton( "Hard" );
+	cancelButton = new JButton( "Cancel" ); // ditto for Cancel
+	
+	buttonPanel.add( softButton );
+	buttonPanel.add( hardButton );
+	buttonPanel.add( cancelButton );
+	
+	content.add( buttonPanel, BorderLayout.SOUTH );
+	
+	softButton.addActionListener( this );
+	hardButton.addActionListener( this );
+	cancelButton.addActionListener( this );
+	
+	dialog.getRootPane().setDefaultButton( softButton ); //defines the default button that will run when enter is pressed
+	
+	actionPerformed( e ){
+		this.dialog.dispose(); //closes the dialog
+		
+		cmd = e.getActionCommand();
+		
+		if( cmd.equals( "Soft" ) ){ //if the run button was pressed
+			start( view, true );
+		} else if( cmd.equals( "Hard" )){
+			start( view, false );
+		}
+	}
+	
+	dialog.pack();
+	dialog.setLocationRelativeTo( view );
+	dialog.setDefaultCloseOperation( JDialog.DISPOSE_ON_CLOSE );
+	dialog.setVisible( true );
+	
+	return;
+}
+
+void start( View view, boolean isSoft ){
+	maxLineLen = buffer.getProperty( "maxLineLen" );
+	//Macros.message( view, "maxLineLen:" + maxLineLen );
+	
+	tabSize = buffer.getProperty( "tabSize" );
+	//Macros.message( view, "tabSize:" + tabSize );
+	
+	//Selection[] selections = textArea.getSelection();
+	
+	selections = textArea.getSelection();
+	String result;
+	
+	//Macros.message( view, "selections.length:" + selections.length );
+	
+	if( selections == null || selections.length < 1 ){
+		Macros.error( view, "No selections were made" );
+		return;
+	}
+	
+	for( int i = 0; i < selections.length; i++ ){
+		select = selections[i];
+		select = expandSelection( select );
+		textArea.addToSelection( select );
+		//Macros.message( view, "selection.offset.begin:" + select.getStart() );
+		//Macros.message( view, "selection.offset.end:" + select.getEnd() );
+		result = wrapSelection( select, isSoft, maxLineLen, tabSize );
+		//Macros.message( view, "result:\n" + result );
+		textArea.setSelectedText( select, result );
+	}
+}
+
+Selection expandSelection( Selection select ){
+	int beginLine = select.getStartLine();
+	int beginOffset = textArea.getLineStartOffset( beginLine );
+	int endOffset = select.getEnd();
+	
+	return( new Selection.Range( beginOffset, endOffset ) );
+}
+
+String wrapSelection( Selection select, boolean isSoft, int maxLineLen, int tabSize ){
+	int beginLine = select.getStartLine();
+	int endLine = select.getEndLine();
+	
+	lineText = textArea.getSelectedText( select );
+	StringBuilder selectText = new StringBuilder();
+	
+	int indentCount = 0;
+	int textLen = lineText.length();
+	
+	for( int i = 0; i < textLen; i++ ){
+		if( lineText.charAt( i ) == '\t' ){
+			indentCount++;
+		} else {
+			break;
+		}
+	}
+	//Macros.message( view, "indentCount:" + indentCount );
+	lineText = lineText.trim();
+	
+	if( isSoft ){
+		lineText = wrapLineSoft( lineText, maxLineLen, tabSize );
+	} else {
+		lineText = wrapLineHard( lineText, maxLineLen, tabSize );
+	}
+	
+	String newIndent = "";
+	for( int i = 0; i < indentCount; i++ ){
+		newIndent += '\t';
+	}
+	
+	if( indentCount > 0 ){
+		try {
+			lineText = newIndent + lineText.replaceAll( "\n", "\n" + newIndent );
+		} catch( PatternSyntaxException err ){
+			Macros.message( view, "Pattern was incorrect:" + err );
+		}
+	}
+	
+	return( lineText );
+}
+
+String wrapLineHard( String text, int maxLineLen, int tabSize ){
+	int len = text.length();
+	int width = 0;
+	char tChar;
+	StringBuilder result = new StringBuilder( len );
+	
+	for( i = 0; i < len ; i++ ){
+		tChar = text.charAt( i );
+		if( tChar == '\t' ){
+			width += tabSize;
+		} else if( tChar == '\n' ){
+			width = 0;
+		} else {
+			width += 1;
+		}
+		
+		if( width > maxLineLen ){
+			//Macros.message( view, "width:" + width + ", maxLineLen:" + maxLineLen );
+			result.append( "\n" );
+			width = 0;
+		}
+		result.append( tChar );
+	}
+	
+	return( result.toString() );
+}
+
+String wrapLineSoft( String text, int maxLineLen, int tabSize ){
+	int len = text.length();
+	int width = 0;
+	char tChar;
+	StringBuilder result = new StringBuilder( len );
+	StringBuilder wordBuilder = new StringBuilder();
+	
+	for( i = 0; i < len ; i++ ){
+		tChar = text.charAt( i );
+		if( Character.isWhitespace( tChar )){
+			if( tChar == '\t' ){
+				width += tabSize;
+			} else if( tChar == '\n' ){
+				width = 0;
+			} else if( tChar == ' ' ){
+				width += 1;
+			}
+			
+			//Macros.message( view, result.toString() + "\n\nwidth:" + width + ", maxLineLen:" + maxLineLen );
+			if( width > maxLineLen ){
+				result.append( "\n" );
+				//tChar = '\n';
+				width = 0;
+				
+				result.append( wordBuilder.toString() );
+				width = wordBuilder.length()-1;
+				//clear the current word
+				wordBuilder.delete( 0, wordBuilder.length() );
+				
+				result.append( tChar );
+			} else {
+				result.append( wordBuilder.toString() );
+				wordBuilder.delete( 0, wordBuilder.length() );
+				
+				result.append( tChar );
+			}
+		} else {
+			width += 1;
+			wordBuilder.append( tChar );
+		}
+	}
+	
+	if( width > maxLineLen ){
+		result.append( "\n" );
+	}
+	result.append( wordBuilder.toString() );
+	return( result.toString() );
+}
+
+if( buffer.isReadOnly() ){
+	Macros.error( view, "Buffer is read-only, and cannot be modified" );
+} else {
+	showDialog( view ); //to show dialog uncomment this and comment next line
+	//start( view );    //to not show dialog, uncomment this and comment prev line
+}

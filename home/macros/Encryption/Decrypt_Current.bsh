@@ -1,0 +1,152 @@
+/*
+ * Decrypt_Current.bsh - Decrypts the current buffer content. The physical file
+ * content will not be modified until user saves the buffer. Buffer must be
+ * encrypted with Encrypt_Current.bsh.
+ *
+ * Uses PBE with MD5 and DES algorithm. Macro will prompt the user for a 
+ * password which will be used to decrypt the buffer content.
+ *
+ * David Mlejnek, mailto:davo@nadhlad.sk
+ *
+ */
+
+import java.io.*;
+import javax.crypto.*;
+import javax.crypto.spec.*;
+import javax.swing.border.*;
+
+String TRANSFORMATION = "PBEWithMD5AndDES";
+String ENCODING = buffer.getStringProperty(Buffer.ENCODING);
+int BYTES_REPLACEMENT_OFFSET = 256;
+int BYTES_REPLACEMENT_RADIX = 32;
+
+void showDialog() {
+  
+  title = "Decrypt buffer";
+  
+  dialog = new JDialog(view, title, false);
+  content = new JPanel(new BorderLayout());
+  content.setBorder(new EmptyBorder(5, 5, 5, 5));
+  dialog.setContentPane(content);
+  
+  pwPanel = new JPanel(new GridLayout(1, 2));
+  pwLabel = new JLabel("Enter password: ");
+  pwField = new JPasswordField();
+  pwPanel.add(pwLabel);
+  pwPanel.add(pwField);
+  content.add(pwPanel, BorderLayout.CENTER);
+  
+  
+  buttonPanel = new JPanel(new GridLayout(1, 2));
+  buttonPanel.setBorder( new EmptyBorder(5, 0, 0, 0));
+  
+  okButton = new JButton("OK");
+  cancelButton = new JButton("Cancel");
+  
+  buttonPanel.add(okButton);
+  buttonPanel.add(cancelButton);
+  
+  content.add(buttonPanel, BorderLayout.SOUTH);
+  
+  okButton.addActionListener(this);
+  cancelButton.addActionListener(this);
+  
+  dialog.getRootPane().setDefaultButton(okButton);
+  
+  actionPerformed(e) {
+    
+    this.dialog.dispose();
+    
+    cmd = e.getActionCommand();
+    
+    if(cmd.equals("OK")) {
+      decryptBuffer(this.pwField.getPassword());
+    }
+    
+    return;
+  }
+  
+  dialog.pack();
+  dialog.setLocationRelativeTo(view);
+  dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+  dialog.setVisible(true);
+  
+}
+
+void decryptBuffer(char[] passwd) {
+  
+  Cipher pbeCipher = createCipher(passwd, Cipher.DECRYPT_MODE);
+  
+  String content = textArea.getText();
+  
+  //Decode number representations to bytes
+  byte[] dec = decodeBytes(content);
+  if(dec == null) {
+    return;
+  }
+  
+  try {
+    
+    // Decrypt
+    byte[] data = pbeCipher.doFinal(dec);
+    
+    // Decode using buffer encoding
+    content = new String(data, ENCODING);
+    
+    
+    textArea.setText(content);
+    textArea.goToBufferStart(false);
+  
+  } catch(Exception e) {
+    
+    Macros.error(view, "Failed to decrypt buffer: Password invalid.");
+    
+  }
+}
+
+Cipher createCipher(char[] passwd, int opmode) {
+  int iterationCount = 20;
+  byte[] salt = {
+      (byte)0xc7, (byte)0x73, (byte)0x21, (byte)0x8c,
+      (byte)0x7e, (byte)0xc8, (byte)0xee, (byte)0x99
+  };
+  
+  // Create PBE parameter set
+  PBEParameterSpec pbeParamSpec = new PBEParameterSpec(salt, iterationCount);
+  PBEKeySpec pbeKeySpec = new PBEKeySpec(passwd);
+  SecretKeyFactory keyFac = SecretKeyFactory.getInstance(TRANSFORMATION);
+  SecretKey pbeKey = keyFac.generateSecret(pbeKeySpec);
+  
+  // Create PBE Cipher
+  Cipher pbeCipher = Cipher.getInstance(TRANSFORMATION);
+  pbeCipher.init(opmode, pbeKey, pbeParamSpec);
+  
+  return pbeCipher;
+  
+}
+
+byte[] decodeBytes(String source) {
+  
+  String[] token = source.split("[\\s\\r\\n]+");
+  byte[] data = new byte[token.length];
+  
+  for(int i=0; i<token.length; i++) {
+    
+    try {
+      
+      int n = Integer.parseInt(token[i], BYTES_REPLACEMENT_RADIX) - BYTES_REPLACEMENT_OFFSET;
+      data[i] = (byte) n;
+      
+    } catch(NumberFormatException e) {
+      Macros.error(view, "Failed to decrypt buffer: Invalid format.");
+      return null;
+    }
+    
+  }
+  
+  return data;
+}
+
+
+showDialog();
+

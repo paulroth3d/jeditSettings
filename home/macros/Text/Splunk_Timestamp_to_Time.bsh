@@ -1,0 +1,11 @@
+// This is a temporary macro. First, check over the
+// commands to make sure this is what you intended.
+// Then, to run this macro, switch to the buffer
+// where you would like to execute it and press C+m C+p.
+SearchAndReplace.setSearchString("(\\d{4})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})([.]\\d+)");
+SearchAndReplace.setReplaceString("earliest=$2/$3/$1:$4:$5:$6");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setWholeWord(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.replace(view);

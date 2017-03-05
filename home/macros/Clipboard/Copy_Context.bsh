@@ -1,0 +1,59 @@
+/**
+ * Line_Numbers.bsh - Adds in Line numbers to selected text
+ * 
+ * $Id$
+ */
+
+import javax.swing.border.*;
+
+void start( View view ){
+	//Macros.message( view, "starting now" );
+	this.view = view;
+	
+	JEditBuffer buffer = textArea.getBuffer();
+	Selection[] selections = textArea.getSelection();
+	Selection select;
+	StringBuilder result = new StringBuilder( "[" + buffer.getPath() + "]\n" );
+	
+	if( selections == null || selections.length < 1 ){
+		Macros.error( view, "No lines selected" );
+		return;
+	}
+	
+	for( int j = 0; j < selections.length; j++ ){
+		buildSelection( result, selections, j );
+	}
+	
+	//newBuffer = jEdit.newFile( view );
+	//area = view.getTextArea();
+	//area.setText( result.toString() );
+	
+	Registers.setRegister('$',result.toString());
+	HistoryModel.getModel("clipboard").addItem(result.toString());
+}
+
+void buildSelection( StringBuilder result, Selection[] selections, int index ){
+	Selection s = selections[index];
+	
+	if( selections.length == 1 ){
+	} else {
+		result.append( "Selection[" + index + "]:\n" );
+	}
+	
+	int startLine = s.getStartLine();
+	int endLine = s.getEndLine()+1;
+	String lineText;
+	//Macros.message( view, "startLine[" + startLine + "] endLine[" + endLine + "]" );
+	
+	result.append( "\n{{{\n" );
+	
+	for( int i = startLine; i < endLine; i++ ){
+		lineText = buffer.getLineText( i );
+		//Macros.message( view, "LineText[" + i + "]:" + lineText );
+		result.append( "" + i + " : " + lineText + "\n" );
+	}
+	
+	result.append( "}}}\n" );
+}
+
+start( view );

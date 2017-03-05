@@ -1,0 +1,105 @@
+/*
+ * Swap_XML_Comments.bsh - swaps the comments for xml into accepted and non-accepted comment blocks.
+ * 
+ * $Id$
+ */
+
+import gnu.regexp.*;
+import javax.swing.border.*;
+
+void showDialog( View view ) {
+  
+  title = "Add or Remove Block Decorators";
+  
+  dialog = new JDialog(view, title, false);
+  content = new JPanel(new BorderLayout());
+  content.setBorder(new EmptyBorder(5, 5, 5, 5));
+  dialog.setContentPane(content);
+  
+  buttonPanel = new JPanel(new GridLayout(1, 3));
+  buttonPanel.setBorder( new EmptyBorder(5, 0, 0, 0));
+  
+  addButton = new JButton("Comment");
+  remButton = new JButton("UN-Comment");
+  cancelButton = new JButton("Cancel");
+  
+  buttonPanel.add(addButton);
+  buttonPanel.add(remButton);
+  buttonPanel.add(cancelButton);
+  
+  content.add(buttonPanel, BorderLayout.SOUTH);
+  
+  addButton.addActionListener(this);
+  remButton.addActionListener(this);
+  cancelButton.addActionListener(this);
+  
+  dialog.getRootPane().setDefaultButton(addButton);
+  
+  actionPerformed(e) {
+    this.dialog.dispose();
+    
+    cmd = e.getActionCommand();
+    
+    if(cmd.equals("Comment")){
+		//decryptBuffer(this.pwField.getPassword());
+		start( view, true );
+    } else if( cmd.equals("UN-Comment")){
+		start( view, false );
+	}
+    
+    return;
+  }
+  
+  dialog.pack();
+  dialog.setLocationRelativeTo(view);
+  dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+  dialog.setVisible(true);
+}
+
+void start( View view, Boolean shouldClean ){
+	//Macros.message( view, "start" );
+	//Macros.message( view, "pre:" + pre + ", post:" + post );
+	this.view = view;
+	
+	Selection[] selections = textArea.getSelection();
+	Selection select;
+	String selected;
+	String lineSep = buffer.getProperty( buffer.LINESEP );
+	
+	if( selections.length < 1 ){
+		Macros.error( view, "no selections made" );
+		return;
+	}
+	
+	for( i = 0; i < selections.length; i++ ){
+		//Macros.message( view, "evaluating selection [" + (i+1) + "/" + selections.length + "]" );
+		select=selections[i];
+		selectionText=combineSelection( select );
+		
+		//Macros.message( view, selectionText );
+		
+		if( shouldClean ){
+			result=selectionText.replaceAll( "\\<\\!--", "<!#" );
+			result=result.replaceAll( "--\\>", "#>" );
+		} else {
+			result=selectionText.replaceAll( "\\<\\!\\#", "<!--" );
+			result=result.replaceAll( "#>", "-->" );
+		}
+		
+		textArea.setSelectedText( select, result );
+	}
+}
+
+String combineSelection( select ){
+	start=select.getStart();
+	end=select.getEnd();
+	txt=buffer.getText( start, end-start );
+	//Macros.message( view, txt );
+	return( txt );
+}
+
+if(buffer.isReadOnly()){
+	Macros.error( view, "Buffer is read-only." );
+} else {
+	showDialog(view);
+}

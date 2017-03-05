@@ -1,0 +1,23 @@
+// This is a temporary macro. First, check over the
+// commands to make sure this is what you intended.
+// Then, to run this macro, switch to the buffer
+// where you would like to execute it and press C+m C+p.
+String filePath = buffer.getPath();
+String fileName = filePath.substring( filePath.lastIndexOf( "/" ) + 1 );
+String path = filePath.substring(0, filePath.lastIndexOf( "/" ) );
+
+//Macros.message( view, path );
+
+//Macros.message( view, fileName );
+Boolean isClean = fileName.startsWith( "clean_" );
+
+String newFileName = null;
+if( isClean ){
+	newFileName = fileName.replace( "clean_","" );
+} else {
+	newFileName = "clean_" + fileName;
+}
+
+//Macros.message( view, newFileName );
+
+jEdit.openFile( view, path + "/" + newFileName );

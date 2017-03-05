@@ -1,0 +1,59 @@
+// FROM http://www.turdhead.com/jedit-and-actionscript-the-collected-files/
+// Macro command to search the AS2 Language Reference to find a (likely) page from the manual
+// that describes the current "word" and display the result in the InfoViewer panel within jEdit.
+// Could be improved, perhaps, but it sure seems to work.
+//
+// Beanshell script written by Mike Fahy (VeryVito) of Turdhead.com
+// and released into the public domain. Yep, free as in beer.
+//
+// Questions, comments or large amounts of cash may be sent to nospam@turdhead.com
+// 
+// NOTE: These scripts rely on the reference files installed with Adobe Flash CS3. 
+// If you are using a different version of Flash, are on a system other than OS X
+// or have otherwise changed your default path to the ActionScript reference files, 
+// you must change the value of "folder" below to reflect the correct path.
+
+import java.util.regex.*;
+
+//String folder = new String ("/Library/Application Support/Adobe/Flash CS3/en/Configuration/HelpPanel/Help/ActionScriptLangRefV2");
+String folder = new String("C:/Documents and Settings/All Users/Application Data/Adobe/Flash CS3/en/Configuration/HelpPanel/Help/ActionScriptLangRefV2");
+String urlFolder = new String("file:///C:/Documents%20and%20Settings/All%20Users/Application%20Data/Adobe/Flash%20CS3/en/Configuration/HelpPanel/Help/ActionScriptLangRefV2");
+String helpTOC = "help_toc.xml";
+
+String target = folder + "/" + helpTOC;
+
+textArea.goToPrevCharacter(false);
+textArea.selectWord();
+
+String record = null;
+String urlToOpen  = null;
+String wordToFind = textArea.getSelectedText();
+String fileToLoad = null;
+String regEx = "href\\s*\\=\\s*\"(.*?)\"\\s*name\\s*\\=\\s*\"(" + wordToFind + ".*)\"";
+
+Pattern regPat = Pattern.compile(regEx);
+Matcher matcher;
+BufferedReader bufr;
+
+try {
+	bufr = new BufferedReader (new FileReader (target));
+	
+	while ( (record = bufr.readLine()) != null ) { 
+		matcher = regPat.matcher(record);
+		if (matcher.find())	{
+			
+			fileToLoad = matcher.group(1);
+		
+			infoviewer.InfoViewerPlugin.openURL(view, urlFolder + "/" +  fileToLoad);
+			break;
+		}
+	} 
+	 
+	if (fileToLoad == null)	{
+		Macros.error(view, "Sorry. No help found in " + folder);
+		//infoviewer.InfoViewerPlugin.openURL(view, "file://" + folder + "/help_toc.xml");
+	}
+	
+}	catch (java.io.IOException e)	{
+	Macros.error(view, "An error occurred while trying to parse\n" + target);
+}

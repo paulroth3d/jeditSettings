@@ -1,0 +1,246 @@
+<?xml version="1.0"?>
+<!DOCTYPE MODE SYSTEM "xmode.dtd">
+
+<!-- POV ini mode -->
+<MODE>
+	<PROPS>
+		<PROPERTY NAME="lineComment" VALUE=";" />
+	</PROPS>
+	<RULES ESCAPE="\" IGNORE_CASE="TRUE" HIGHLIGHT_DIGITS="TRUE" >
+		<!-- Sections -->
+		<SPAN TYPE="LITERAL1" AT_LINE_START="TRUE">
+			<BEGIN>[</BEGIN>
+			<END>]</END>
+		</SPAN>
+		
+		<!-- Line Comments -->
+		<EOL_SPAN TYPE="COMMENT1" >;</EOL_SPAN>
+		
+		<KEYWORDS>
+			<KEYWORD1>TRUE</KEYWORD1>
+			<KEYWORD1>YES</KEYWORD1>
+			<KEYWORD1>ON</KEYWORD1>
+			<KEYWORD1>Clock</KEYWORD1><!-- =n.n  Sets clock float identifier to n.n -->
+			<KEYWORD1>Initial_Frame</KEYWORD1><!-- =n  Sets initial frame number to n -->
+			<KEYWORD1>Final_Frame</KEYWORD1><!-- =n  Sets final frame number to n -->
+			<KEYWORD1>Initial_Clock</KEYWORD1><!-- =n.n  Sets initial clock value to n.n -->
+			<KEYWORD1>Final_Clock</KEYWORD1><!-- =n.n  Sets final clock value to n.n -->
+			<KEYWORD1>Subset_Start_Frame</KEYWORD1><!-- =n  Set subset starting frame to n -->
+			<KEYWORD1>Subset_Start_Frame</KEYWORD1><!-- =0.n  Set subset starting frame to n percent -->
+			<KEYWORD1>Subset_End_Frame</KEYWORD1><!-- =n  Set subset ending frame to n -->
+			<KEYWORD1>Subset_End_Frame</KEYWORD1><!-- =0.n  Set subset ending frame to n percent -->
+			<KEYWORD1>Cyclic_Animation</KEYWORD1><!-- =bool  Turn cyclic animation on/off -->
+			<KEYWORD1>+KC</KEYWORD1><!--   Turn cyclic animation on -->
+			<KEYWORD1>-KC</KEYWORD1><!--   Turn cyclic animation off -->
+			<KEYWORD1>Field_Render</KEYWORD1><!-- =bool  Turn field rendering on/off -->
+			<KEYWORD1>Odd_Field</KEYWORD1><!-- =bool  Set odd field flag -->
+			<KEYWORD1>+UF</KEYWORD1><!--   Turn field rendering on -->
+			<KEYWORD1>-UF</KEYWORD1><!--   Turn field rendering off -->
+			<KEYWORD1>+UO</KEYWORD1><!--   Set odd field flag on -->
+			<KEYWORD1>-UO</KEYWORD1><!--   Set odd field flag off -->
+			<KEYWORD1>Height</KEYWORD1><!-- =n  Sets screen height to n pixels -->
+			<KEYWORD1>Width</KEYWORD1><!-- =n  Sets screen width to n pixels -->
+			<KEYWORD1>Start_Column</KEYWORD1><!-- =n  Set first column to n pixels -->
+			<KEYWORD1>Start_Column</KEYWORD1><!-- =0.n  Set first column to n percent of width -->
+			<KEYWORD1>Start_Row</KEYWORD1><!-- =n  Set first row to n pixels -->
+			<KEYWORD1>Start_Row</KEYWORD1><!-- =0.n  Set first row to n percent of height -->
+			<KEYWORD1>End_Column</KEYWORD1><!-- =n  Set last column to n pixels -->
+			<KEYWORD1>End_Column</KEYWORD1><!-- =0.n  Set last column to n percent of width -->
+			<KEYWORD1>End_Row</KEYWORD1><!-- =n  Set last row to n pixels -->
+			<KEYWORD1>End_Row</KEYWORD1><!-- =0.n  Set last row to n percent of height -->
+			<KEYWORD1>Test_Abort</KEYWORD1><!-- =bool  Turn test for user abort on/off -->
+			<KEYWORD1>+X</KEYWORD1><!--   Turn test abort on -->
+			<KEYWORD1>-X</KEYWORD1><!--   Turn test abort off -->
+			<KEYWORD1>Test_Abort_Count</KEYWORD1><!-- =n  Set to test for abort every n pixels -->
+			<KEYWORD1>Continue_Trace</KEYWORD1><!-- =bool  Sets continued trace on/off -->
+			<KEYWORD1>+C</KEYWORD1><!--   Sets continued trace on -->
+			<KEYWORD1>-C</KEYWORD1><!--   Sets continued trace off -->
+			<KEYWORD1>Create_Ini</KEYWORD1><!-- =file  Generate an INI file to file -->
+			<KEYWORD1>Create_Ini</KEYWORD1><!-- =true  Generate file.ini where file is scene name. -->
+			<KEYWORD1>Create_Ini</KEYWORD1><!-- =false  Turn off generation of previously set file.ini -->
+			<KEYWORD1>+GI</KEYWORD1><!-- file  Same as Create_Ini=file -->
+			<KEYWORD1>Display</KEYWORD1><!-- =bool  Turns graphic display on/off -->
+			<KEYWORD1>+D</KEYWORD1><!--   Turns graphic display on -->
+			<KEYWORD1>-D</KEYWORD1><!--   Turns graphic display off -->
+			<KEYWORD1>Video_Mode</KEYWORD1><!-- =x  Set video mode to x; does not affect on/off -->
+			<KEYWORD1>Palette</KEYWORD1><!-- =y  Set display palette to y; does not affect on/off -->
+			<KEYWORD1>Display_Gamma</KEYWORD1><!-- =n.n  Sets the display gamma to n.n -->
+			<KEYWORD1>Pause_When_Done</KEYWORD1><!-- =bool  Sets pause when done on/off -->
+			<KEYWORD1>+P</KEYWORD1><!--   Sets pause when done on -->
+			<KEYWORD1>-P</KEYWORD1><!--   Sets pause when done off -->
+			<KEYWORD1>Verbose</KEYWORD1><!-- =bool  Set verbose messages on/off -->
+			<KEYWORD1>+V</KEYWORD1><!--   Set verbose messages on -->
+			<KEYWORD1>-V</KEYWORD1><!--   Set verbose messages off -->
+			<KEYWORD1>Draw_Vistas</KEYWORD1><!-- =bool  Turn draw vistas on/off -->
+			<KEYWORD1>+UD</KEYWORD1><!--   Turn draw vistas on -->
+			<KEYWORD1>-UD</KEYWORD1><!--   Turn draw vistas off -->
+			<KEYWORD1>Preview_Start_Size</KEYWORD1><!-- =n  Set mosaic preview start size to n -->
+			<KEYWORD1>Preview_End_Size</KEYWORD1><!-- =n  Set mosaic preview end size to n -->
+			<KEYWORD1>Output_to_File</KEYWORD1><!-- =bool  Sets file output on/off -->
+			<KEYWORD1>+F</KEYWORD1><!--   Sets file output on (use default type) -->
+			<KEYWORD1>-F</KEYWORD1><!--   Sets file output off -->
+			<KEYWORD1>Output_File_Type</KEYWORD1><!-- =x  Sets file output format to x -->
+			<KEYWORD1>Output_Alpha</KEYWORD1><!-- =bool  Sets alpha output on/off -->
+			<KEYWORD1>+UA</KEYWORD1><!--   Sets alpha output on -->
+			<KEYWORD1>-UA</KEYWORD1><!--   Sets alpha output off -->
+			<KEYWORD1>Bits_Per_Color</KEYWORD1><!-- =n  Sets file output bits/color to n -->
+			<KEYWORD1>Output_File_Name</KEYWORD1><!-- =file  Sets output file to file -->
+			<KEYWORD1>+O</KEYWORD1><!-- file  Same as Output_File_Name=file -->
+			<KEYWORD1>Histogram_Type</KEYWORD1><!-- =y  Set histogram type to y (Turn off if type is 'X') -->
+			<KEYWORD1>+HTN</KEYWORD1><!--   PNG (portable network graphics) format grayscale -->
+			<KEYWORD1>+HTP</KEYWORD1><!--   Unix PPM format -->
+			<KEYWORD1>+HTS</KEYWORD1><!--   System-specific such as Mac Pict or Windows BMP -->
+			<KEYWORD1>+HTT</KEYWORD1><!--   Uncompressed Targa-24 format (TGA) -->
+			<KEYWORD1>+HTX</KEYWORD1><!--   No histogram file output is generated -->
+			<KEYWORD1>Histogram_Name</KEYWORD1><!-- =file  Set histogram name to file -->
+			<KEYWORD1>+HN</KEYWORD1><!-- file  Same as Histogram_Name=file -->
+			<KEYWORD1>Histogram_Grid_Size</KEYWORD1><!-- = nn.mm  Set histogram grid to nn by mm -->
+			<KEYWORD1>+HS</KEYWORD1><!-- nn.mm  Same as Histogram_Grid_Size=nn.mm -->
+			<KEYWORD1>Declare</KEYWORD1><!-- Declares an identifier with a float value -->
+			<KEYWORD1>Input_File_Name</KEYWORD1><!-- =file  Sets input file name to file -->
+			<KEYWORD1>+I</KEYWORD1><!-- file  Same as Input_File_Name=file -->
+			<KEYWORD1>Include_Header</KEYWORD1><!-- =file  Sets primary include file name to file -->
+			<KEYWORD1>+HI</KEYWORD1><!-- file  Same as Include_Header=file -->
+			<KEYWORD1>Library_Path</KEYWORD1><!-- =path  Add path to list of library paths -->
+			<KEYWORD1>+L</KEYWORD1><!-- path  Same as Library_Path=path -->
+			<KEYWORD1>Version</KEYWORD1><!-- =n.n  Set initial language compatibility to version n.n -->
+			<KEYWORD1>Pre_Scene_Command</KEYWORD1><!-- =s  Set command before entire scene -->
+			<KEYWORD1>Pre_Frame_Command</KEYWORD1><!-- =s  Set command before each frame -->
+			<KEYWORD1>Post_Scene_Command</KEYWORD1><!-- =s  Set command after entire scene -->
+			<KEYWORD1>Post_Frame_Command</KEYWORD1><!-- =s  Set command after each frame -->
+			<KEYWORD1>User_Abort_Command</KEYWORD1><!-- =s  Set command when user aborts POV-Ray -->
+			<KEYWORD1>Fatal_Error_Command</KEYWORD1><!-- =s  Set command when POV-Ray has fatal error -->
+			<KEYWORD1>Pre_Scene_Return</KEYWORD1><!-- =s  Set pre scene return actions -->
+			<KEYWORD1>Pre_Frame_Return</KEYWORD1><!-- =s  Set pre frame return actions -->
+			<KEYWORD1>Post_Scene_Return</KEYWORD1><!-- =s  Set post scene return actions -->
+			<KEYWORD1>Post_Frame_Return</KEYWORD1><!-- =s  Set post frame return actions -->
+			<KEYWORD1>User_Abort_Return</KEYWORD1><!-- =s  Set user abort return actions -->
+			<KEYWORD1>Fatal_Error_Return</KEYWORD1><!-- =s  Set fatal return actions -->
+			<KEYWORD1>Debug_Console</KEYWORD1><!-- =bool  Turn console display of debug info text on/off -->
+			<KEYWORD1>+GD</KEYWORD1><!--   Same as Debug_Console=On -->
+			<KEYWORD1>-GD</KEYWORD1><!--   Same as Debug_Console=Off -->
+			<KEYWORD1>Fatal_Console</KEYWORD1><!-- =bool  Turn console display of fatal error text on/off -->
+			<KEYWORD1>+GF</KEYWORD1><!--   Same as Fatal_Console=On -->
+			<KEYWORD1>-GF</KEYWORD1><!--   Same as Fatal_Console=Off -->
+			<KEYWORD1>Render_Console</KEYWORD1><!-- =bool  Turn console display of render info text on/off -->
+			<KEYWORD1>+GR</KEYWORD1><!--   Same as Render_Console=On -->
+			<KEYWORD1>-GR</KEYWORD1><!--   Same as Render_Console=Off -->
+			<KEYWORD1>Statistic_Console</KEYWORD1><!-- =bool  Turn console display of statistic text on/off -->
+			<KEYWORD1>+GS</KEYWORD1><!--   Same as Statistic_Console=On -->
+			<KEYWORD1>-GS</KEYWORD1><!--   Same as Statistic_Console=Off -->
+			<KEYWORD1>Warning_Console</KEYWORD1><!-- =bool  Turn console display of warning text on/off -->
+			<KEYWORD1>+GW</KEYWORD1><!--   Same as Warning_Console=On -->
+			<KEYWORD1>-GW</KEYWORD1><!--   Same as Warning_Console=Off -->
+			<KEYWORD1>All_Console</KEYWORD1><!-- =bool  Turn on/off all debug, fatal, render, statistic and warning text to console. -->
+			<KEYWORD1>+GA</KEYWORD1><!--   Same as All_Console=On -->
+			<KEYWORD1>-GA</KEYWORD1><!--   Same as All_Console=Off -->
+			<KEYWORD1>Debug_File</KEYWORD1><!-- =true  Echo debug info text to DEBUG.OUT -->
+			<KEYWORD1>Debug_File</KEYWORD1><!-- =false  Turn off file output of debug info -->
+			<KEYWORD1>Debug_File</KEYWORD1><!-- =file  Echo debug info text to file -->
+			<KEYWORD1>+GD</KEYWORD1><!-- file  Both Debug_Console=On, Debug_File=file -->
+			<KEYWORD1>-GD</KEYWORD1><!-- file  Both Debug_Console=Off, Debug_File=file -->
+			<KEYWORD1>Fatal_File</KEYWORD1><!-- =true  Echo fatal text to FATAL.OUT -->
+			<KEYWORD1>Fatal_File</KEYWORD1><!-- =false  Turn off file output of fatal -->
+			<KEYWORD1>Fatal_File</KEYWORD1><!-- =file  Echo fatal info text to file -->
+			<KEYWORD1>+GF</KEYWORD1><!-- file  Both Fatal_Console=On, Fatal_File=file -->
+			<KEYWORD1>-GF</KEYWORD1><!-- file  Both Fatal_Console=Off, Fatal_File=file -->
+			<KEYWORD1>Render_File</KEYWORD1><!-- =true  Echo render info text to RENDER.OUT -->
+			<KEYWORD1>Render_File</KEYWORD1><!-- =false  Turn off file output of render info -->
+			<KEYWORD1>Render_File</KEYWORD1><!-- =file  Echo render info text to file -->
+			<KEYWORD1>+GR</KEYWORD1><!-- file  Both Render_Console=On, Render_File=file -->
+			<KEYWORD1>-GR</KEYWORD1><!-- file  Both Render_Console=Off, Render_File=file -->
+			<KEYWORD1>Statistic_File</KEYWORD1><!-- =true  Echo statistic text to STATS.OUT -->
+			<KEYWORD1>Statistic_File</KEYWORD1><!-- =false  Turn off file output of statistics -->
+			<KEYWORD1>Statistic_File</KEYWORD1><!-- =file  Echo statistic text to file -->
+			<KEYWORD1>+GS</KEYWORD1><!-- file  Both Statistic_Console=On, Statistic_File=file -->
+			<KEYWORD1>-GS</KEYWORD1><!-- file  Both Statistic_Console=Off, Statistic_File=file -->
+			<KEYWORD1>Warning_File</KEYWORD1><!-- =true  Echo warning info text to WARNING.OUT -->
+			<KEYWORD1>Warning_File</KEYWORD1><!-- =false  Turn off file output of warning info -->
+			<KEYWORD1>Warning_File</KEYWORD1><!-- =file  Echo warning info text to file -->
+			<KEYWORD1>+GW</KEYWORD1><!-- file  Both Warning_Console=On, Warning_File=file -->
+			<KEYWORD1>-GW</KEYWORD1><!-- file  Both Warning_Console=Off, Warning_File=file -->
+			<KEYWORD1>All_File</KEYWORD1><!-- =true  Echo all debug, fatal, render, statistic, and warning text to ALLTEXT.OUT -->
+			<KEYWORD1>All_File</KEYWORD1><!-- =false  Turn off file output of all debug, fatal, render, statistic, and warning text. -->
+			<KEYWORD1>All_File</KEYWORD1><!-- =file  Echo all debug, fatal, render, statistic, and warning text to file -->
+			<KEYWORD1>+GA</KEYWORD1><!-- file  Both All_Console=On, All_File=file -->
+			<KEYWORD1>-GA</KEYWORD1><!-- file  Both All_Console=Off, All_File=file -->
+			<KEYWORD1>Warning_Level</KEYWORD1><!-- =n  Allows you to turn off classes of warnings. -->
+			<KEYWORD1>-?</KEYWORD1><!--   Show help screen 0 if this is the only switch -->
+			<KEYWORD1>Quality</KEYWORD1><!-- =n  Set quality value to n (0 <= n <= 11) -->
+			<KEYWORD1>Bounding</KEYWORD1><!-- =bool  Turn bounding on/off -->
+			<KEYWORD1>+MB</KEYWORD1><!--   Turn bounding on; Set threshold to 25 or previous amount -->
+			<KEYWORD1>-MB</KEYWORD1><!--   Turn bounding off -->
+			<KEYWORD1>Bounding_Threshold</KEYWORD1><!-- =n  Set bound threshold to n -->
+			<KEYWORD1>Light_Buffer</KEYWORD1><!-- =bool  Turn light buffer on/off -->
+			<KEYWORD1>+UL</KEYWORD1><!--   Turn light buffer on -->
+			<KEYWORD1>-UL</KEYWORD1><!--   Turn light buffer off -->
+			<KEYWORD1>Vista_Buffer</KEYWORD1><!-- =bool  Turn vista buffer on/off -->
+			<KEYWORD1>+UV</KEYWORD1><!--   Turn vista buffer on -->
+			<KEYWORD1>-UV</KEYWORD1><!--   Turn vista buffer off -->
+			<KEYWORD1>Remove_Bounds</KEYWORD1><!-- =bool  Turn unnecessary bounds removal on/off -->
+			<KEYWORD1>+UR</KEYWORD1><!--   Turn unnecessary bounds removal on -->
+			<KEYWORD1>-UR</KEYWORD1><!--   Turn unnecessary bounds removal off -->
+			<KEYWORD1>Split_Unions</KEYWORD1><!-- =bool  Turn split bounded unions on/off -->
+			<KEYWORD1>+SU</KEYWORD1><!--   Turn split bounded unions on -->
+			<KEYWORD1>-SU</KEYWORD1><!--   Turn split bounded unions off -->
+			<KEYWORD1>Antialias</KEYWORD1><!-- =bool  Turns anti-aliasing on/off -->
+			<KEYWORD1>+A</KEYWORD1><!--   Turns aa on with threshold 0.3 or previous amount -->
+			<KEYWORD1>-A</KEYWORD1><!--   Turns anti-aliasing off -->
+			<KEYWORD1>Sampling_Method</KEYWORD1><!-- =n  Sets aa-sampling method (only 1 or 2 are valid) -->
+			<KEYWORD1>Antialias_Threshold</KEYWORD1><!-- =n.n  Sets anti-aliasing threshold -->
+			<KEYWORD1>Jitter</KEYWORD1><!-- =bool  Sets aa-jitter on/off -->
+			<KEYWORD1>+J</KEYWORD1><!--   Sets aa-jitter on with 1.0 or previous amount -->
+			<KEYWORD1>-J</KEYWORD1><!--   Sets aa-jitter off -->
+			<KEYWORD1>Jitter_Amount</KEYWORD1><!-- =n.n  Sets aa-jitter amount to n.n. If n.n <= 0 aa-jitter is set off -->
+			<KEYWORD1>Antialias_Depth</KEYWORD1><!-- =n  Sets aa-depth (1 <= n <= 9) -->
+		</KEYWORDS>
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]D.</SEQ_REGEXP><!-- x  Set display on; Set mode to x -->
+		<SEQ_REGEXP HASH_CHAR="-" AT_WORD_START="TRUE" TYPE="KEYWORD1">[-]D.</SEQ_REGEXP><!-- x  Set display off; but for future use mode x -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]D..</SEQ_REGEXP><!-- xy  Set display on; Set mode x; Set palette y -->
+		<SEQ_REGEXP HASH_CHAR="-" AT_WORD_START="TRUE" TYPE="KEYWORD1">[-]D..</SEQ_REGEXP><!-- xy  Set display off; use mode x, palette y in future -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]F.\d+</SEQ_REGEXP><!-- xn  Sets file output on; sets format x, depth n -->
+		<SEQ_REGEXP HASH_CHAR="-" AT_WORD_START="TRUE" TYPE="KEYWORD1">[-]F.\d+</SEQ_REGEXP><!-- xn  Sets file output off; but in future use format x, depth n -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]HT.</SEQ_REGEXP><!-- y  Same as Histogram_Type=y -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]W\d+</SEQ_REGEXP>
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]K-?(\d+\.)?\d+</SEQ_REGEXP><!-- n.n  Same as Clock=n.n -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]KFI\d+</SEQ_REGEXP><!-- n  Same as Initial_Frame=n -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]KFF\d+</SEQ_REGEXP><!-- n  Same as Final_Frame=n -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]KI-?(\d+\.)?\d+</SEQ_REGEXP><!-- n.n  Same as Initial_Clock=n.n -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]KF-?(\d+\.)?\d+</SEQ_REGEXP><!-- n.n  Same as Final_Clock=n.n -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]SF0\.\d+</SEQ_REGEXP><!-- 0.n  Same as Subset_Start_Frame -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]EF0\.\d+</SEQ_REGEXP><!-- 0.n  Same as Subset_End_Frame -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]H\d+</SEQ_REGEXP><!-- n  Same as Height=n -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]W\d+</SEQ_REGEXP><!-- n  Same as Width=n -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]SC0\.\d+</SEQ_REGEXP><!-- 0.n  Same as Start_Column -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]S\d+</SEQ_REGEXP><!-- n  Same as Start_Row=n -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]SR0\.\d+</SEQ_REGEXP><!-- 0.n or +S -->0.n  Same as Start_Row=0.n#
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]EC0\.\d+</SEQ_REGEXP><!-- 0.n  Same as End_Column -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]E\d+</SEQ_REGEXP><!-- n  Same as End_Row=n -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]ER0\.\d+</SEQ_REGEXP><!-- 0.n -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]E0\.\d+</SEQ_REGEXP><!-- 0.n  Same as End_Row=0.n -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]X\d+</SEQ_REGEXP><!-- n  Set to test for abort every n pixels on -->
+		<SEQ_REGEXP HASH_CHAR="-" AT_WORD_START="TRUE" TYPE="KEYWORD1">[-]X\d+</SEQ_REGEXP><!-- n  Set to test for abort off (in future test every n pixels) -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]SP\d+</SEQ_REGEXP><!-- n  Same as Preview_Start_Size=n -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]EP\d+</SEQ_REGEXP><!-- n  Same as Preview_End_Size=n -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]MV-?(\d+\.)?\d+</SEQ_REGEXP><!-- n.n  Same as Version=n.n -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]WL\d+</SEQ_REGEXP><!-- n  Same as Warning_Level=n -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]Q\d+</SEQ_REGEXP><!-- n  Same as Quality=n -->
+		<!--
+		0, 1  Just show quick colors. Use full ambient lighting only. Quick colors are used only at 5 or below.  
+		2, 3  Show specified diffuse and ambient light.  
+		4  Render shadows, but no extended lights.  
+		5  Render shadows, including extended lights.  
+		6, 7  Compute texture patterns, compute photons  
+		8  Compute reflected, refracted, and transmitted rays.  
+		9, 10, 11  Compute media and radiosity  
+		-->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]MB\d+</SEQ_REGEXP><!-- n  Turn bounding on; bound threshold to n -->
+		<SEQ_REGEXP HASH_CHAR="-" AT_WORD_START="TRUE" TYPE="KEYWORD1">[-]MB\d+</SEQ_REGEXP><!-- n  Turn bounding off; set future threshold to n -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]AM\d+</SEQ_REGEXP><!-- n  Same as Sampling_Method=n -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]A-?(\d+\.)?\d+</SEQ_REGEXP><!-- n.n  Sets aa on with aa-threshold at n.n -->
+		<SEQ_REGEXP HASH_CHAR="-" AT_WORD_START="TRUE" TYPE="KEYWORD1">[-]A-?(\d+\.)?\d+</SEQ_REGEXP><!-- n.n  Sets aa off (aa-threshold n.n in future) -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]J-?(\d+\.)?\d+</SEQ_REGEXP><!-- n.n  Sets aa-jitter on; jitter amount to n.n. If n.n <= 0 aa-jitter is set off -->
+		<SEQ_REGEXP HASH_CHAR="-" AT_WORD_START="TRUE" TYPE="KEYWORD1">[-]J-?(\d+\.)?\d+</SEQ_REGEXP><!-- n.n  Sets aa-jitter off (jitter amount n.n in future) -->
+		<SEQ_REGEXP HASH_CHAR="+" AT_WORD_START="TRUE" TYPE="KEYWORD1">[+]R\d+</SEQ_REGEXP><!-- n  Same as Antialias_Depth=n -->
+	</RULES>
+</MODE>

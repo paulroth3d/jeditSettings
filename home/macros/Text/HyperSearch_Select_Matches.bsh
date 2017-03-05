@@ -1,0 +1,143 @@
+/*
+ * Select_HyperSearch_Matches.bsh - A Beanshell macro script
+ * for the jEdit text editor - selects all matches for the last
+ * HyperSearch in the current EditPane.
+ * Copyright (C) 2001 Ollie Rutherfurd <oliver@rutherfurd.net>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with the jEdit program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * Notes on use:
+ *
+ * This macro is based on 'Write_HyperSearch_Results.bsh', so has similar
+ * limitations.  It uses the last HyperSearchs generated, so it is best run
+ * directly after executing a search.
+ *
+ * $Id: Select_HyperSearch_Matches.bsh 28 2003-03-25 22:40:28Z oliver $
+ */
+
+
+void selectMatchingLines()
+{
+
+	title = "Select HyperSearch Matches";
+	hsearch = view.getDockableWindowManager()
+		.getDockable("hypersearch-results");
+
+	if(hsearch == null)
+	{
+		Macros.error(view, "The \"HyperSearch Results\" window is not open.");
+		return;
+	}
+
+	if(jEdit.getBooleanProperty("view.search.hypersearch.toggle") == false &&
+		jEdit.getBooleanProperty("search.hypersearch.toggle") == false)
+	{
+		response = JOptionPane.showConfirmDialog(view,
+			"Search settings have changed.  Continue?",
+			title, JOptionPane.YES_NO_OPTION);
+		if(response != JOptionPane.YES_OPTION)
+			return;
+	}
+
+	treeModel = hsearch.getTreeModel();
+	root = treeModel.getRoot();
+	if(root == null)
+	{
+		view.getStatus().setMessageAndClear("No HyperSearch Matches.");
+		return;
+	}
+
+	childCount = root.getChildCount();
+	bufferPath = textArea.getBuffer().getPath();
+
+	if (childCount == 0)
+	{
+		view.getStatus().setMessageAndClear("No matches found in \""
+			+ bufferPath + "\"");
+	}
+	else
+	{
+		node = root.getFirstChild();
+		for(int i = 0; i < childCount; ++i)
+		{
+			if(node.getUserObject().toString().equals(bufferPath))
+			{
+				count = 0;
+
+				lineNode = node.getFirstChild();
+				while(lineNode != null)
+				{
+					line = ((HyperSearchResult)lineNode.getUserObject()).line;
+
+					start = textArea.getLineStartOffset(line);
+					end = textArea.getLineEndOffset(line);
+					textArea.extendSelection(start, end - 1);
+
+					count += 1;
+					lineNode = lineNode.getNextSibling();
+				}
+
+				view.getStatus().setMessageAndClear("" + count 
+					+ " line" + (count > 1 ? "s" : "") + " selected");
+
+				return;
+			}
+			node = node.getNextSibling();
+		}
+
+		view.getStatus().setMessageAndClear("No matches found in \""
+			+ bufferPath + "\"");
+
+	}
+}
+
+
+// helper function, replace with 'Macros.confirm', when Macros grows that method 
+boolean Macros_confirm(view, message)
+{
+	response = JOptionPane.showConfirmDialog(view, message,
+			"Macro Confirm", JOptionPane.YES_NO_OPTION);
+	return response == JOptionPane.YES_OPTION;
+}
+
+
+// un-comment to get prompted for removing existing selections
+// 
+// if(textArea.getSelectionCount() > 0)
+// {
+// 	if(Macros_confirm(view, "Un-select existing selections?"))
+// 		textArea.selectNone();
+// }
+
+
+// so selection state can be put back the way it was 
+originalSelectionState = textArea.isMultipleSelectionEnabled();
+
+
+textArea.setMultipleSelectionEnabled(true);
+selectMatchingLines();
+textArea.setMultipleSelectionEnabled(originalSelectionState);
+
+// end Select_HyperSearch_Matches.bsh
+
+/*
+
+	<listitem>
+		<para><filename>Select_HyperSearch_Matches</filename></para>
+		<abstract><para>Select all lines with matches from the 
+		last HyperSearch.</para></abstract>
+	</listitem>
+
+*/

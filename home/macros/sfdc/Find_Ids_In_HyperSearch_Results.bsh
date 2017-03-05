@@ -1,0 +1,110 @@
+/**
+ * Line_Numbers.bsh - Adds in Line numbers to selected text
+ * 
+ * $Id$
+ */
+
+import javax.swing.border.*;
+
+void showDialog( View view ) {
+  
+  title = "Add or Remove Block Decorators";
+  
+  dialog = new JDialog(view, title, false);
+  content = new JPanel(new BorderLayout());
+  content.setBorder(new EmptyBorder(5, 5, 5, 5));
+  dialog.setContentPane(content);
+  
+  opPanel = new JPanel( new GridLayout(1,1) );
+  
+  prPanel = new JPanel(new GridLayout(1, 2));
+  prLabel = new JLabel("5 Character ID Prefix");
+  prField = new JTextField( "" );
+  prPanel.add(prLabel);
+  prPanel.add(prField);
+  
+  opPanel.add( prPanel );
+  
+  content.add(opPanel, BorderLayout.CENTER);
+  
+  buttonPanel = new JPanel(new GridLayout(1, 2));
+  buttonPanel.setBorder( new EmptyBorder(5, 0, 0, 0));
+  
+  addButton = new JButton("OK");
+  cancelButton = new JButton("Cancel");
+  
+  buttonPanel.add(addButton);
+  buttonPanel.add(cancelButton);
+  
+  content.add(buttonPanel, BorderLayout.SOUTH);
+  
+  addButton.addActionListener(this);
+  cancelButton.addActionListener(this);
+  
+  dialog.getRootPane().setDefaultButton(addButton);
+  
+  actionPerformed(e) {
+    this.dialog.dispose();
+    
+    cmd = e.getActionCommand();
+    
+	if(cmd.equals("OK")){
+		//decryptBuffer(this.pwField.getPassword());
+		start( view, prField.getText() );
+    }
+    
+    return;
+  }
+  
+  dialog.pack();
+  dialog.setLocationRelativeTo(view);
+  dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+  dialog.setVisible(true);
+}
+
+void start( View view, String titleStr ){
+	SearchAndReplace.setSearchString("\\b(" + titleStr + ")[a-zA-Z0-9]{10,13}");
+	SearchAndReplace.setReplaceString("†$0‡");
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setWholeWord(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+	SearchAndReplace.replaceAll(view);
+	
+	SearchAndReplace.setSearchString("^[^\\n†‡]+†");
+	SearchAndReplace.setReplaceString("");
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setWholeWord(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+	SearchAndReplace.replaceAll(view);
+	SearchAndReplace.setSearchString("‡[^\\n†‡]+\\n");
+	SearchAndReplace.setReplaceString("\\n");
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setWholeWord(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+	SearchAndReplace.replaceAll(view);
+	SearchAndReplace.setSearchString("‡[^\\n†‡]+†");
+	SearchAndReplace.setReplaceString(", ");
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setWholeWord(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+	SearchAndReplace.replaceAll(view);
+	
+	SearchAndReplace.setSearchString("^[^\\n†‡]+\\n");
+	SearchAndReplace.setReplaceString("\\n");
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setWholeWord(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+	SearchAndReplace.replaceAll(view);
+}
+
+showDialog( view );

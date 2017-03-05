@@ -1,0 +1,170 @@
+// This is a temporary macro. First, check over the
+// commands to make sure this is what you intended.
+// Then, to run this macro, switch to the buffer
+// where you would like to execute it and press C+m C+p.
+
+/*
+ * Rem_Block_Decorators.bsh - Removes the javadoc stars on a selection of text
+ * 
+ * $Id$
+ */
+
+import gnu.regexp.*;
+import javax.swing.border.*;
+
+void showDialog( View view ) {
+  
+  title = "Sanitize SFDC Log";
+  
+  dialog = new JDialog(view, title, false);
+  content = new JPanel(new BorderLayout());
+  content.setBorder(new EmptyBorder(5, 5, 5, 5));
+  dialog.setContentPane(content);
+  
+  opPanel = new JPanel( new GridLayout(1,1) );
+  
+  prPanel = new JPanel(new GridLayout(2, 1));
+  prField = new JCheckBox("Include Method Entry/Exit");
+  prField.setSelected( false );
+  prPanel.add( prField );
+  
+  prField2 = new JCheckBox("Group by Execution");
+  prField2.setSelected(true);
+  prPanel.add( prField2 );
+  
+  opPanel.add( prPanel );
+  
+  content.add(opPanel, BorderLayout.CENTER);
+  
+  buttonPanel = new JPanel(new GridLayout(1, 2));
+  buttonPanel.setBorder( new EmptyBorder(5, 0, 0, 0));
+  
+  runButton = new JButton("Run");
+  cancelButton = new JButton("Cancel");
+  
+  buttonPanel.add(runButton);
+  buttonPanel.add(cancelButton);
+  
+  content.add(buttonPanel, BorderLayout.SOUTH);
+  
+  runButton.addActionListener(this);
+  cancelButton.addActionListener(this);
+  
+  dialog.getRootPane().setDefaultButton(runButton);
+  
+  actionPerformed(e) {
+    this.dialog.dispose();
+    
+    cmd = e.getActionCommand();
+    
+    if(cmd.equals("Run")){
+    	start( view, prField.isSelected(), prField2.isSelected() );
+    } else {
+    	
+	}
+    
+    return;
+  }
+  
+  dialog.pack();
+  dialog.setLocationRelativeTo(view);
+  dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+  dialog.setVisible(true);
+}
+
+void start( View view, boolean includeEntryExit, boolean groupByExecution ){
+
+	SearchAndReplace.setSearchString("^[^\\n\\|]+\\|(EXECUTION_STARTED|USER_DEBUG|EXCEPTION_THROWN|FATAL_ERROR|WF_FLOW_ACTION_ERROR)[^\\n]*");
+	SearchAndReplace.setReplaceString("@$1@$0");
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+	SearchAndReplace.replaceAll(view);
+	
+	SearchAndReplace.setSearchString("^([^@])");
+	SearchAndReplace.setReplaceString("\\t$1");
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+	SearchAndReplace.replaceAll(view);
+	
+	SearchAndReplace.setSearchString("^@([^\\n@]+)@");
+	SearchAndReplace.setReplaceString("#### $1 ####\\n$0");
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+	SearchAndReplace.replaceAll(view);
+	SearchAndReplace.setSearchString("^[ \\t]+Debug Log:$");
+	SearchAndReplace.setReplaceString("Debug Log:");
+	SearchAndReplace.setBeanShellReplace(false);
+	SearchAndReplace.setIgnoreCase(true);
+	SearchAndReplace.setRegexp(true);
+	SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+	SearchAndReplace.replaceAll(view);
+	
+	if( includeEntryExit == true ){
+		SearchAndReplace.setSearchString("(METHOD_ENTRY[|]\\[\\d*\\]\\|[^\\n|]+\\|)([^\\n(]+)\\(");
+		SearchAndReplace.setReplaceString("$1†$2†(");
+		SearchAndReplace.setBeanShellReplace(false);
+		SearchAndReplace.setWholeWord(false);
+		SearchAndReplace.setIgnoreCase(true);
+		SearchAndReplace.setRegexp(true);
+		SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+		SearchAndReplace.replaceAll(view);
+		
+		SearchAndReplace.setSearchString("^([^\\n†]+)†([^\\n(†]+)†");
+		SearchAndReplace.setReplaceString("ENTER $2\\n$1$2");
+		SearchAndReplace.setBeanShellReplace(false);
+		SearchAndReplace.setWholeWord(false);
+		SearchAndReplace.setIgnoreCase(true);
+		SearchAndReplace.setRegexp(true);
+		SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+		SearchAndReplace.replaceAll(view);
+		
+		SearchAndReplace.setSearchString("(METHOD_EXIT[|]\\[\\d*\\]\\|[^\\n|]+\\|)([^\\n(]+)\\(");
+		SearchAndReplace.setReplaceString("$1†$2†(");
+		SearchAndReplace.setBeanShellReplace(false);
+		SearchAndReplace.setWholeWord(false);
+		SearchAndReplace.setIgnoreCase(true);
+		SearchAndReplace.setRegexp(true);
+		SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+		SearchAndReplace.replaceAll(view);
+		
+		SearchAndReplace.setSearchString("^([^\\n†]+)†([^\\n(†]+)†");
+		SearchAndReplace.setReplaceString("EXIT $2\\n$1$2");
+		SearchAndReplace.setBeanShellReplace(false);
+		SearchAndReplace.setWholeWord(false);
+		SearchAndReplace.setIgnoreCase(true);
+		SearchAndReplace.setRegexp(true);
+		SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+		SearchAndReplace.replaceAll(view);
+		
+	}
+	
+	if( groupByExecution ){
+		SearchAndReplace.setSearchString("^");
+		SearchAndReplace.setReplaceString("\\t$1");
+		SearchAndReplace.setBeanShellReplace(false);
+		SearchAndReplace.setIgnoreCase(true);
+		SearchAndReplace.setRegexp(true);
+		SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+		SearchAndReplace.replaceAll(view);
+		
+		SearchAndReplace.setSearchString("^	(#### EXECUTION_STARTED)");
+		SearchAndReplace.setReplaceString("$1");
+		SearchAndReplace.setBeanShellReplace(false);
+		SearchAndReplace.setIgnoreCase(true);
+		SearchAndReplace.setRegexp(true);
+		SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+		SearchAndReplace.replaceAll(view);
+	}
+	
+	textArea.goToBufferStart(false);
+	textArea.setSelectedText("#Start of file\n");
+
+}
+
+showDialog( view );

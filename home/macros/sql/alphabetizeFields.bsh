@@ -1,0 +1,22 @@
+// This is a temporary macro. First, check over the
+// commands to make sure this is what you intended.
+// Then, to run this macro, switch to the buffer
+// where you would like to execute it and press C+m C+p.
+SearchAndReplace.setSearchString("\\s*,\\s*");
+SearchAndReplace.setReplaceString("\\n");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setWholeWord(true);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+textArea.selectAll();
+TextToolsSorting.sortLines(textArea,false);
+SearchAndReplace.setSearchString("\\n");
+SearchAndReplace.setReplaceString(", ");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setWholeWord(true);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);

@@ -1,0 +1,553 @@
+[global]
+ast|∗
+xi|ξ
+Upsilon|Υ
+<-|←
+female|♀
+qed|∎
+leftarpoonup|↼
+angle|∠
+varphi|φ
+swarrow|↙
+nillams|∍
+rightarrow|→
+delta|δ
+bigtriangleup|∆
+wr|≀
+propto|∝
+succ|≻
+hookleftarrow|↪
+Delta|Δ
+geq|≥
+Box|∞
+subseteq|⊆
+rceil|⎤
+nabla|∇
+union|∪
+Diamond|◇
+triangleright|⊳
+mangle|∢
+htmlTemplate|<!DOCTYPE html>\n<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->\n<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->\n<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->\n<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->\n    <head>\n        <meta charset="utf-8">\n        <meta http-equiv="X-UA-Compatible" content="IE=edge">\n        <title>$1</title>\n        <meta name="description" content="$1">\n        <meta name="viewport" content="width=device-width, initial-scale=1">\n\n        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->\n\n        <script type="text/javascript" src="https://raw.githubusercontent.com/paulmillr/console-polyfill/master/index.js"></script>\n        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css"/>\n    </head>\n    <body>\n        <!--[if lt IE 7]>\n            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>\n        <![endif]-->\n\n        <!-- Add your site or application content here -->\n        <p>Hello world! This is HTML5 Boilerplate.</p>\n        \|\n        <script type="text/javascript" src="https://raw.githubusercontent.com/paulmillr/console-polyfill/master/index.js"></script>\n        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.js"></script>\n        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>\n    </body>\n</html>
+nwarrow|↖
+beta|β
+coprod|∐
+notin|∉
+bullet|∙
+->|→
+leftarrow|←
+sharp|♯
+in|∈
+succeq|≽
+rfloor|⎦
+Downarrow|⇓
+male|♂
+--|—
+rho|ρ
+Pi|Π
+cdot|⋅
+doesnotdivide|∤
+heartsuit|♡
+uparrow|↑
+emptyset|∅
+forall|∀
+rightleftharpoons|⇋
+rhd|◁
+div|∻
+leftrighthaproons|⇌
+phi|ϕ
+aleph|א
+pigql|"step_CostPerHour": {\n\t"type": "aggregate",\n\t"query": {\n\t\t"measures": [\n\t\t\t[\n\t\t\t\t"sum",\n\t\t\t\t"Total_Amount__c"\n\t\t\t]\n\t\t],\n\t\t"pigql": "workOrders = load \\"MHD_WorkOrders\\"; \\n workOrders = group workOrders by 'relatedAsset.SerialNumber';\\n workOrders = foreach workOrders generate 'relatedAsset.SerialNumber' as 'relatedAsset.SerialNumber',\\n sum('Total_Amount__c') as 'sum_Total_Amount__c';\\n workOrders = limit workOrders 2000;",\n\t\t"groups": [\n\t\t\t"relatedAsset.SerialNumber"\n\t\t]\n\t},\n\t"isGlobal": false,\n\t"isFacet": true,\n\t"useGlobal": true,\n\t"selectMode": "single",\n\t"start": null,\n\t"datasets": [\n\t\t{\n\t\t\t"name": "MHD_WorkOrders"\n\t\t}\n\t],\n\t"visualizationParameters": {\n\t\t"visualizationType": "hbar"\n\t}\n}
+omega|ω
+Updownarrow|⇳
+upsilon|υ
+doteq|≐
+perp|⊥
+Omega|Ω
+int|∫
+lhd|▷
+approx|≈
+notexists|∄
+bigcirc|◯
+alpha|α
+simeq|≃
+sqsubseteq|⊑
+zeta|ζ
+oint|∮
+ss|ß
+gg|≫
+psi|ψ
+OO|Ø
+niton|∌
+gamma|γ
+clubsuit|♣
+diamond|◇
+OE|Œ
+Gamma|Γ
+triangleleft|⊲
+and|∧
+cap|∩
+setminus|∖
+replaceSelection|textArea.setSelectedText( textArea.getSelection()[0], $1 );
+vee|∨
+searrow|↘
+docHeader|/**\n *  About\n *  -----\n *  Author: Paul Roth <proth@salesforce.com>\n *  Created for: ICON Project\n *  Create date: $2\n *  \n *  Details\n *  -----\n *  $2\n *  \n *  Update History\n *  -----\n *  $1\n *  - initial version\n *  \n *  Issues / TODOs\n *  -----\n *  (There are a number of tasks, please see rally project)\n**/
+bemol|♭
+parallel|∥
+//--|//--\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t\n
+kappa|κ
+frown|⁀
+circ|∘
+sqcap|⊔
+pounds|£
+neq|≠
+leq|≤
+dashv|⊢
+neg|¬
+AE|Æ
+AA|Å
+Phi|Φ
+Lambda|Λ
+nearrow|↗
+iota|ι
+Xi|Ξ
+intoOutFile|INTO OUTFILE '/tmp/cs_note_update.csv'\nFIELDS TERMINATED BY ','\nENCLOSED BY '"'\nLINES TERMINATED BY '\\n';
+oslash|⊘
+complement|∁
+equiv|≡
+epsilon|ε
+ddag|‡
+leadsto|↝
+<->|↔
+pm|±
+downarrow|↓
+pi|π
+top|⊤
+sim|∼
+leftharpoondown|↽
+lfloor|⎣
+sangle|∢
+otimes|⊗
+leftrightarrow|↔
+Psi|Ψ
+sun|☼
+sum|∑
+exists|∃
+inter|∩
+star|∗
+or|∨
+bigtriangledown|∇
+supseteq|⊇
+oo|ø
+smile|‿
+jeditMessage|Macros.message( view, $1 );
+preceq|≼
+smallin|∊
+rightharpoonup|⇀
+??|¿
+mid||
+oe|œ
+copyright|©
+theta|ϴ
+cong|≅
+Leftarrow|⇐
+mapsto|↦
+diamondsuit|♢
+tau|τ
+S|§
+Theta|Θ
+nu|ν
+c->|↪
+lceil|⎡
+prec|≺
+updownarrow|↕
+sigma|σ
+wedge|∧
+spadesuit|♠
+ni|∋
+notparallel|∦
+tmp|\n    <fields>\n        <fullName>Case_RT_$1__c</fullName>\n        <externalId>false</externalId>\n        <inlineHelpText>Record type for the Case $2 record type.</inlineHelpText>\n        <label>Case RT $2</label>\n        <length>18</length>\n        <required>true</required>\n        <trackTrending>false</trackTrending>\n        <type>Text</type>\n\t<defaultValue>"$3"</defaultValue>\n        <unique>false</unique>\n    </fields>
+Sigma|Σ
+cup|∪
+pigqlStep|            "customerGoalsScalars_2": {\n                "isFacet": false,\n                "isGlobal": false,\n                "query": {\n                    "measures": [\n                        [\n                            "sum",\n                            "Opportunity"\n                        ]\n                    ],\n                    "pigql": "q = load \\"GasdCustomerGoals2\\";\\n q = filter q by 'Rep' in {{ (selection(repNameList_1)) }};\\n q = filter q by 'dealer.Name' in {{ (selection(dealerNameList_1)) }};\\n q = filter q by 'rep.GASD_Industry__c' in {{ (selection(industryNameList_1)) }};\\n q = filter q by 'Account_Name' in {{ (selection(accountNameList_1)) }};\\n q = filter q by 'account.gasd.Key_Account_Type__c' in {{ (selection(keyAccountTypeList_1)) }};\\n q = group q by all;\\n q = foreach q generate sum('Opportunity') as 'sum_Opportunity', sum('Sales_Actual_YTD') as 'sum_Sales_Actual_YTD', ((sum('Sales_Actual_YTD')/sum('Opportunity')) * 100) as 'sum_Pct_Attained', sum('Sales_Goal') as 'sum_Sales_Goal';\\n q = limit q 2000;"\n                },\n                "selectMode": "single",\n                "type": "aggregate",\n                "useGlobal": false,\n                "datasets": [\n                    {\n                        "name": "GasdCustomerGoals2"\n                    }\n                ]\n            }
+asymp|≍
+ominus|⊝
+notsim|≁
+odot|⊙
+subset|⊂
+lambda|λ
+surd|√
+mu|μ
+Rightarrow|⇒
+ae|æ
+mp|∓
+partial|∂
+supset|⊃
+sqcup|⊔
+aa|å
+=>|⇒
+chi|χ
+sqsubset|⊏
+rightharpoondown|⇁
+bowtie|⋈
+divides|∣
+eta|η
+hookrightarrow|↩
+sqsupset|⊐
+increment|∆
+dag|†
+Uparrow|⇑
+ll|≪
+sqsupseteq|⊒
+<=|⇐
+prod|∏
+models|⊨
+[c++]
+[sqr]
+[nsis2]
+[asp]
+[latex]
+[cfscript]
+[factor]
+[batch]
+[mel]
+[assembly-mcs51]
+[vrml2]
+[groovy]
+[relax-ng-compact]
+[icon]
+[velocity]
+[patch]
+[beanshell]
+[pl1]
+[pyrex]
+[fortran90]
+[inno-setup]
+[inform]
+[netrexx]
+[eiffel]
+[fortran]
+[chill]
+[pl-sql9]
+[macroscheduler]
+[smalltalk]
+[idl]
+[haxe]
+[smarty]
+[pvwave]
+[ada95]
+[pl-sql]
+[vala]
+[htaccess]
+[apacheconf]
+[clojure]
+[povray-ini]
+[io]
+[pure]
+[sbt]
+[properties]
+[metapost]
+[rhtml]
+[powerdynamo]
+[vhdl]
+slv|std_logic_vector( x downto y )
+sl|std_logic
+var|variable
+sig|signal
+[logs]
+[maple]
+[lotos]
+[django]
+[PowerCenter Parameter File]
+[php]
+[ada]
+[processing]
+[yab]
+[lua]
+[makefile]
+[sas]
+[rtf]
+[ptl]
+[gcbasic]
+[xsl]
+fes|<xsl:for-each select="\|">\n</xsl:for-each>
+nc|<xsl:number count="\|"/>
+asn|<xsl:attribute-set name="\|">\n</xsl:attribute-set>
+sse|<xsl:strip-space elements="\|"/>
+cos|<xsl:copy-of select="\|"/>
+com|<xsl:comment>\|</xsl:comment>
+imh|<xsl:import href="\|"/>
+an|<xsl:attribute name="\|"></xsl:attribute>
+mt|<xsl:message terminate="\|"></xsl:message>
+vns|<xsl:variable name="\|" select=""/>
+ai|<xsl:apply-imports/>
+ss|<xsl:sort select="\|"/>
+pn|<xsl:param name="\|"/>
+vn|<xsl:variable name="\|"/>
+pse|<xsl:preserve-space elements="\|"/>
+cwt|<xsl:choose>\n\t<xsl:when test="\|">\n\t</xsl:when>\n</xsl:choose>
+wpn|<xsl:with-param name="\|" select=""/>
+it|<xsl:if test="\|">\n</xsl:if>
+tnm|<xsl:template name="\|" match="">\n</xsl:template>
+ctn|<xsl:call-template name="\|"/>
+co|<xsl:copy>\|</xsl:copy>
+pin|<xsl:processing-instruction name="\|"></xsl:processing-instruction>
+om|<xsl:output method="\|"/>
+ats|<xsl:apply-templates select="\|"/>
+oe|<xsl:output encoding="\|"/>
+atsm|<xsl:apply-templates select="\|" mode=""/>
+x|<?xml version="1.0"?>\|
+tdoe|<xsl:text disable-output-escaping="\|"></xsl:text>
+xe|<?xml vesion="1.0" encoding="\|"?>
+t|<xsl:text>\|</xsl:text>
+ctnwp|<xsl:call-template name="\|">\n\t<xsl:with-param name="" select=""/>\n</xsl:call-template>
+s|<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">\n\|\n</xsl:stylesheet>
+o|<xsl:otherwise>\n\|\n</xsl:otherwise>
+cwto|<xsl:choose>\n\t<xsl:when test="\|">\n\t</xsl:when>\n\t<xsl:otherwise>\n\t</xsl:otherwise>\n</xsl:choose>
+n|<xsl:number/>
+tmm|<xsl:template match="\|" mode="">\n</xsl:template>
+m|<xsl:message>\|</xsl:message>
+inh|<xsl:include href="\|"/>
+k|<xsl:key name="\|" match="" use=""/>
+en|<xsl:element name="\|">\n</xsl:element>
+vos|<xsl:value-of select="\|"/>
+f|<xsl:fallback>\|</xsl:fallback>
+tn|<xsl:template name="\|">\n</xsl:template>
+tm|<xsl:template match="\|">\n</xsl:template>
+[moin]
+[bibtex]
+[modula3]
+[hxml]
+[tsp]
+[perl]
+[transact-sql]
+[lisp]
+[smi-mib]
+[actionscript]
+[pop11]
+[progress]
+[ini]
+[jamon]
+[html]
+polymerTemplate|<!DOCTYPE html>\n<head>\n\t<!--\n\tbower init\n\tbower install --save Polymer/polymer\n\tbower install --save Polymer/core-ajax\n\t-->\n\t\n\t<meta charset="utf-8">\n\t<meta http-equiv="X-UA-Compatible" content="IE=edge">\n\t<title>Polymer test</title>\n\t<meta name="description" content="Polymer test">\n\t<meta name="viewport" content="width=device-width, initial-scale=1">\n\n\t<script src="../components/webcomponentsjs/webcomponents.js"></script>\n\t\n\t<!-- <link rel="import" href="elements/my-element.html"> -->\n</head>\n<body unresolved>\n\t\n\t<!-- Add your site or application content here -->\n\t<p>Hello world! This is HTML5 Boilerplate.</p>\n\t\|\n</body>\n</html>
+d3jsTemplate|<!DOCTYPE html>\n<html>\n<head>\n\t<meta charset='utf-8'>\n\t<title>Force layout example 2</title>\n\t<style type="text/css">\n.node {\n\tfill: #ccc;\n\tstroke: #fff;\n\tstroke-width: 2px;\n}\n\n.link {\n\tstroke: #777;\n\tstroke-width: 2px;\n}\n\t</style>\n</head>\n<body>\n\t<script src='http://d3js.org/d3.v3.min.js'></script>\n\t<script type='text/javascript'>\n\nvar width = 640,\n\theight = 480;\n\t\nvar nodes = [\n\t{ x: width/3, y: height/2 },\n\t{ x: 2*width/3, y: height/2 }\n];\n\nvar links = [\n\t{ source: 0, target: 1 }\n];\n\nvar svg = d3.select('body')\n\t.append( 'svg' )\n\t.attr('width', width )\n\t.attr('height', height );\n\nvar force = d3.layout.force()\n\t.size([width,height])\n\t.nodes(nodes)\n\t.links(links);\n\nforce.linkDistance( width/2 );\n\nvar link = svg.selectAll('.link')\n\t.data(links)\n\t.enter().append('line')\n\t.attr('class','link');\n\nvar node = svg.selectAll('.node')\n\t.data(nodes)\n\t.enter().append('circle')\n\t.attr('class','node');\n\nforce.on('end', function(){\n\tnode.attr('r', width/25 )\n\t\t.attr('cx', function(d){ return d.x; } )\n\t\t.attr('cy', function(d){ return d.y; } );\n\t\n\tlink.attr( 'x1', function(d){ return d.source.x; } )\n\t\t.attr( 'y1', function(d){ return d.source.y; } )\n\t\t.attr( 'x2', function(d){ return d.target.x; } )\n\t\t.attr( 'y2', function(d){ return d.target.y; } );\n});\n\nforce.start();\n\n\t</script>\n</body>\n</html>
+senchaTemplate|<!DOCTYPE html>\n<html>\n<head>\n\t<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n\t<title>$1</title>\n\t\n\t<!-- stylesheet for extjs -->\n\t<link rel="stylesheet" type="text/css" href="lib/sencha/resources/css/sencha-touch.css" />\n\t<!-- ext main -->\n\t<script type="text/javascript" src="lib/sencha/sencha-touch-all-debug.js"></script>\n\t\n\t<!-- main application object -->\n\t<script type="text/javascript" src="app.js"></script>\n\t\n\t\|\n</head>\n<body></body>\n</html>
+bootstrapTemplate|<!DOCTYPE html>\n<html lang="en">\n<head>\n\t<meta charset="utf-8">\n\t<meta http-equiv="X-UA-Compatible" content="IE=edge">\n\t<meta name="viewport" content="width=device-width, initial-scale=1">\n\t<title>$1</title>\n\t\n\t<!-- bootstrap -->\n\t<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">\n\t<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">\n\t\n\t<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->\n\t<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->\n\t<!--[if lt IE 9]>\n\t<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>\n\t<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>\n\t<![endif]-->\n\t<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>\n\t<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>\n</head>\n<body>\n\t<div class="jumbotron">\n\t\t<div class="container">\n\t\t\t<h1>$1</h1>\n\t\t\t<p>JumboTron Description</p>\n\t\t</div>\n\t\t<p><a class="btn btn-primary btn-lg" role="button" href='test.html'>Test Page</a></p>\n\t</div>\n    <div class="container">\n    \t<div class="row">\n    \t\t<div class="col-md-12" style='text-align:center'>\n    \t\t\t<p>\|</p>\n    \t\t</div>\n    \t</div>\n    </div>\n</body>\n</html>
+extJSTemplate|<!DOCTYPE html>\n<html>\n<head>\n\t<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n\t<title>$1</title>\n\t\n\t<!-- stylesheet for extjs -->\n\t<link rel="stylesheet" type="text/css" href="ext/resources/css/ext-all.css" />\n\t<!-- ext main -->\n\t<script type="text/javascript" src="ext/ext-all-debug.js"></script>\n\t\n\t<!-- main application object -->\n\t<script type="text/javascript" src="app.js"></script>\n\t\n\t\|\n</head>\n<body></body>\n</html>
+foundationTemplate|<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">\n<html><head>\n<script src="//cdnjs.cloudflare.com/ajax/libs/foundation/5.1.1/js/vendor/modernizr.js" type="text/javascript"></script>\n<script src="//cdnjs.cloudflare.com/ajax/libs/foundation/5.1.1/js/vendor/jquery.js" type="text/javascript"></script>\n<link class="user" href="//cdnjs.cloudflare.com/ajax/libs/foundation/5.1.1/css/foundation.css" rel="stylesheet" type="text/css" />\n<link class="user" href="//cdnjs.cloudflare.com/ajax/libs/foundation/5.1.1/css/responsive-tables.css" rel="stylesheet" type="text/css" />\n<link class="user" href="//cdnjs.cloudflare.com/ajax/libs/foundation/5.1.1/css/main.css" rel="stylesheet" type="text/css" />\n</head>\n<body>\n\n\t<nav class="top-bar">\n\t\t<ul class="title-area">\n\t\t\t<li class="name">\n\t\t\t\t<h1><a href='#'>$1</a></h1>\n\t\t\t</li>\n\t\t</ul>\n\t</nav>\n\t\n\t<div class='row'>\n\t\t<div class='small-12 columns'>\n\t\t\t<h3>$2</h3>\n\t\t\t<p>Description</p>\n\t\t\t\n\t\t</div>\n\t</div>\n\t\|\n<script>\n  $(document).foundation();\n</script></body></html>
+[go]
+[sgml]
+[bcel]
+[psp]
+[antlr]
+[cmake]
+[PostgreSQL]
+[ant]
+[assembly-m68k]
+[omnimark]
+[interlis]
+[mxml]
+[avro]
+[cvs-commit]
+[lilypond]
+[jsp]
+[foxpro]
+[rfc]
+[tex]
+[mail]
+[assembly-macro32]
+[svn-commit]
+[aspect-j]
+[squidconf]
+[handlebars]
+[rview]
+[jhtml]
+[jedit-actions]
+[gradle]
+[embperl]
+[mysql]
+[apex]
+debugVal|System.debug( '$1[' + $1 + ']' );
+expectException|try {\n\t\|\n\tSystem.assert( false, 'Exception must be thrown' );\n} catch( Exception err ){\n\t//-- exception expected.\n}
+simpleDebug|System.debug( '$1[' + $1 + ']' );
+testTemplate|/**\n * This class contains unit tests for validating the behavior of Apex classes\n * and triggers.\n *\n * Unit tests are class methods that verify whether a particular piece\n * of code is working properly. Unit test methods take no arguments,\n * commit no data to the database, and are flagged with the testMethod\n * keyword in the method definition.\n *\n * All test methods in an organization are executed whenever Apex code is deployed\n * to a production organization to confirm correctness, ensure code\n * coverage, and prevent regressions. All Apex classes are\n * required to have at least 75% code coverage in order to be deployed\n * to a production organization. In addition, all triggers must have some code coverage.\n * \n * The @isTest class annotation indicates this class only contains test\n * methods. Classes defined with the @isTest annotation do not count against\n * the organization size limit for all Apex scripts.\n *\n * See the Apex Language Reference for more information about Testing and Code Coverage.\n */\n@isTest\nprivate class $1 {\n\t\n\tclass TestSettings {\n\t\t\n\t\t//-- instance values\n\t\t\n\t\tpublic TestSettings(){\n\t\t\t//-- global setup here\n\t\t}\n\t\t\n\t\tpublic void setupA(){\n\t\t\t//-- specific setup here\n\t\t}\n\t\t\n\t\tpublic void finalize(){\n\t\t\t\n\t\t}\n\t}\n\n\t//-- test test methods here\n    static testMethod void runSetupAWithoutException() {\n        TestSettings ts = new TestSettings();\n    \tts.setupA();\n    \tts.finalize();\n        System.assert( true, 'No Exceptions have occurred in getting here' );\n    }\n    \n    //-- test functionality here\n    \n    \|\n}
+noException|try {\n\t\|\n} catch( Exception err ){\n\tSystem.assert( false, 'Exception must not be thrown:' + err.getMessage() );\n}
+[rd]
+[zpt]
+[objective-c]
+[mqsc]
+[lex]
+[prolog]
+[assembly-r2000]
+[sdl/pr]
+[hex]
+[swig]
+[javafx]
+[rebol]
+[s+]
+[dsssl]
+[forth]
+[nqc]
+[s#]
+[fhtml]
+[occam]
+[objectrexx]
+[rpm-spec]
+[apdl]
+[cplex-lp]
+[myghty]
+[tcl]
+[scala]
+[rcp]
+[sip]
+[template-toolkit]
+[python]
+[i4gl]
+[clips]
+[roff]
+[rest]
+[stata]
+[twiki]
+[text]
+fold|{{{{ $1\n\|\n}}}}
+[awk]
+[verilog]
+[outline]
+[erlang]
+[yaml]
+[assembly-ags]
+[shellscript]
+[gettext]
+[jcl]
+[jflex]
+[d]
+[c]
+[maven]
+[coldfusion]
+[b]
+[scheme]
+[dart]
+[texinfo]
+[slax]
+[assembly-agc]
+[java]
+ne|nextElement()
+Il|SwingUtilities.invokeLater(new Runnable()\n{\n\tpublic void run()\n\t{\n\t\t\|\n\t}\n});
+W|while($1)\n{\n\t\|\n}
+V|Vector
+Fd|for(int $1 = $2 - 1; $1 >= 0; $1--)\n{\n\t\|\n}
+serr|System.err.println(\|);
+Fc|for(int $1 = 0; $1 < $2.size(); $1++)\n{\n\t$3 \| = ($3)$2.get($1);\n}
+Ie|if($1)\n{\n\t|\n}\nelse\n{\n\t\n}\n
+VDE|VFS.DirectoryEntry
+S|String
+JE|JEditTextArea
+Fa|for(int $1 = 0; $1 < $2.length; $1++)\n{\n\t$3 \| = $2[$1];\n}
+P|public
+O|Object
+N|$1 $2 = new $1(\|);
+gta|getTextArea()
+gp|jEdit.getProperty(\|)
+I|if($1)\n{\n\t\|\n}
+H|Hashtable
+F|for(int $1 = 0; $1 < $2; $1++)\n{\n\t\|\n}
+Br|BufferedReader $1 = new BufferedReader(\|);
+E|Exception
+D|do\n{\n\t\|\n}\nwhile($1);
+sp|jEdit.setProperty(\|);
+Mal|MalformedURLException
+C|$1 $2 = ($1)\|
+B|Buffer
+ogs|import org.gjt.sp.
+hme|hasMoreElements()
+El|else\n{\n\t\|\n}
+IO|IOException
+gb|getBuffer()
+IN|$1 $2 = ($1)$3.next();
+Ei|else if($1)\n{\n\t\|\n}
+chs|Box.createHorizontalStrut(\|)
+Cget|($1)$2.get($3)
+sbp|jEdit.setBooleanProperty(\|);
+cg|Box.createGlue()
+logw|Log.log(Log.WARNING,this,\|);
+gip|jEdit.getIntegerProperty(\|)
+CtoArray|($1[])$2.toArray(new $1[$2.size()])
+logn|Log.log(Log.NOTICE,this,\|);
+logm|Log.log(Log.MESSAGE,this,\|);
+DMTN|DefaultMutableTreeNode
+loge|Log.log(Log.ERROR,this,\|);
+cvs|Box.createVerticalStrut(\|)
+logd|Log.log(Log.DEBUG,this,\|);
+WI|while($1.hasNext())\n{\n\t\|\n}
+ogsu|import org.gjt.sp.util.
+gbp|jEdit.getBooleanProperty(\|)
+sout|System.out.println(\|);
+ogsj|import org.gjt.sp.jedit.
+[maya_Plugin]
+[assembly-parrot]
+[dot]
+[xml]
+YY|<$1>\n\|\n</$1>
+targetIndent|\n\n\n\n\n
+clsMeta|<?xml version="1.0" encoding="UTF-8"?>\n<ApexClass xmlns="http://soap.sforce.com/2006/04/metadata">\n    <apiVersion>28.0</apiVersion>\n    <status>Active</status>\n</ApexClass>
+targetSpacer|\n\n\n\n\n
+Ykeycombo|<keycombo><keycap>$1</keycap><keycap>$2</keycap></keycombo>
+Ykeycap|<keycap>\|</keycap>
+header|<!--\n#\t#\t#\t#\t#\t#\t#\t#\t#\t#\t#\t#\t#\t#\t#\t#\t#\t#\t#\t\n\|\n#\t#\t#\t#\t#\t#\t#\t#\t#\t#\t#\t#\t#\t#\t#\t#\t#\t#\t#\n-->\n\n\n\n
+antEnvironment|<if>\n    \t<or>\n    \t\t<equals arg1="\\${env.$1}" arg2="\\$\\${env.$1}" />\n    \t\t<equals arg1="\\${env.$1}" arg2="" />\n    \t</or>\n    \t<then>\n    \t\t<property name="$1" value="$2" />\n    \t</then>\n    \t<else>\n    \t\t<property name="$1" value="\\${env.$1}" />\n\t</else>\n</if>
+[rakefile]
+[powershell]
+[cil]
+[visualforce]
+oc|<!-- $1 -->\n\|\n<!-- /$1 -->
+sldsPageTemplate|<apex:page showHeader="false" standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false"\n\tdocType="html-5.0"\n><html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">\n<head>\n\t<title>Salesforce Lightning Design System Trailhead Module</title>\n\t<apex:stylesheet value="{!URLFOR($Resource.lds, 'vendor/assets/styles/salesforce-lightning-design-system-vf.css')}" />\n</head>\n<body id="sldsListview">\n\t\n\t<!-- required slds wrapper -->\n\t<div class="slds">\n\t\t\n\t\t<!-- masthead -->\n\t\t<p class="slds-text-heading--label slds-m-bottom--small">Salesforce Lightning Design Trailhead Module</p>\n\t\t<!-- masthead -->\n\t\t\n\t\t<!-- page header -->\n\t\t<!-- /page header -->\n\t\t\n\t\t<!-- primary content wrapper -->\n\t\t<div class="myapp">\n\t\t\|</div>\n\t\t<!-- primary content wrapper -->\n\t\t\n\t\t<!-- footer -->\n\t\t<!-- /footer -->\n\t\t\n\t</div>\n\t<!-- /required SLDS wrapper -->\n</body>\n\n<!-- JAVASCRIPT -->\n<!-- /JAVASCRIPT -->\n\n</html></apex:page>
+[logtalk]
+[postscript]
+[sql-loader]
+[redcode]
+[literate-haskell]
+[renderman-rib]
+[doxygen]
+[javacc]
+[ruby]
+[pike]
+[applescript]
+[ml]
+[pascal]
+[c#]
+[bbj]
+[freemarker]
+[coffeescript]
+[vbscript]
+[visualbasic]
+[url]
+[povray]
+[jmk]
+[icalendar]
+[slate]
+[tld]
+[shtml]
+[haskell]
+[gsp]
+[hlsl]
+[n3]
+[typescript]
+[plaintex]
+[cobol]
+[csv]
+[Embedded Ruby]
+[css]
+[assembly-x86]
+[binsource-agc]
+[xq]
+[gnuplot]
+[javascript]
+module|'use strict';\n(function () {\n\t//-- includes\n\t\n\t//-- hack to pull from root-level config\n\tvar origValue = process.env.NODE_CONFIG_DIR;\n\tprocess.env.NODE_CONFIG_DIR = '../config';\n\tvar config = require('config');\n\tprocess.env.NODE_CONFIG_DIR = origValue;\n\t\n\t/**\n\t *  constructor\n\t**/\n\tfunction processQueue(){\n\t\tconsole.log( '***** currently doing something *****' );\n\t\t\|\n\t\tprocess.exit(1);\n\t}\n\t\n\tmodule.exports = {\n\t\tprocessQueue: processQueue\n\t};\n\t\n\tif( !module.parent ){\n\t\tprocessQueue();\n\t}\n})();
+sencha2ViewTemplate|/*global '_' Ext console */\nExt.define( '$1', {\n\textend: '$2',\n\txtype: '$3',\n\t\n\tconfig: {\n\t\tfullscreen: true,\n\t\t\|\n\t}\n});
+sencha2StoreTemplate|/*global '_' Ext console */\nExt.define( "$1", {\n\textend: "Ext.data.Store",\n\t\n\tstoreId: "$2",\n\t\n\tconfig: {\n\t\t//-- full path to the model\n\t\tmodel: "$3"\n\t}\n});
+senchaAppTemplate|/**\n *  Main starting point for the application\n **/\n/*global Ext */\n\nExt.Loader.setPath( "Ext", "lib/sencha/src" );\n\nExt.application({\n\tname: "APP",\n\t\n\t//controllers: [],\n\t\n\t//views:[],\n\t\n\tlaunch: function(){\n\t\tExt.create( 'Ext.tab.Panel', {\n\t\t\tfullscreen: true,\n\t\t\ttabBarPosition: 'bottom',\n\t\t\t\n\t\t\titems: [{\n\t\t\t\t\n\t\t\t\ttitle: 'Home',\n\t\t\t\ticonCls: 'home',\n\t\t\t\thtml: [\n\t\t\t\t\t'<img src="http://staging.sencha.com/img/sencha.png" />',\n\t\t\t\t\t'<h1>Welcome to Sencha Touch</h1>',\n\t\t\t\t\t"<p>You're creating the Getting Started app. This demonstrates how ",\n\t\t\t\t\t"to use tabs, lists and forms to create a simple app</p>",\n\t\t\t\t\t'<h2>Sencha Touch (2.0.0)</h2>'\n\t\t\t\t].join("")\n\t\t\t},{\n\t\t\t\txtype: 'formpanel',\n\t\t\t\ttitle: 'Contact',\n\t\t\t\ticonCls: 'user',\n\t\t\t\turl: 'data/test.jsonp',\n\t\t\t\tlayout: 'vbox',\n\t\t\t\t\n\t\t\t\titems: [{\n\t\t\t\t\txtype: 'fieldset',\n\t\t\t\t\ttitle: 'Contact Us',\n\t\t\t\t\tinstructions: '(email is optional)',\n\t\t\t\t\titems: [{\n\t\t\t\t\t\txtype: 'textfield',\n\t\t\t\t\t\tlabel: 'Name'\n\t\t\t\t\t},{\n\t\t\t\t\t\txtype: 'textfield',\n\t\t\t\t\t\tlabel: 'Email'\n\t\t\t\t\t},{\n\t\t\t\t\t\txtype: 'textareafield',\n\t\t\t\t\t\tlabel: 'Message'\n\t\t\t\t\t}]\n\t\t\t\t},{\n\t\t\t\t\txtype: 'button',\n\t\t\t\t\ttext: 'Send',\n\t\t\t\t\tui: 'confirm',\n\t\t\t\t\thandler: function( event ){\n\t\t\t\t\t\tthis.up( 'formpanel' ).submit();\n\t\t\t\t\t}\n\t\t\t\t}]\n\t\t\t}]\n\t\t});\n\t}\n});
+sencha2ControllerTemplate|/*global '_' Ext console */\n\nExt.define( '$1', {\n\textend: 'Ext.app.Controller',\n\t\n\tconfig: {\n\t\trefs: {\n\t\t\t//someView: '#someViewId'\n\t\t},\n\t\t\n\t\tcontrol: {\n\t\t\t//someView: { tap: 'doSomethingCustomLocalMethod' }\n\t\t}\n\t},\n\t\n\tinit: function(){\n\t\tconsole.log( 'initialized $1 controller' );\n\t}\n\t\n\t//-- local methods\n});
+gruntTask|/*global grunt, module */\n'use strict';\n\nmodule.exports = function(grunt){\n\tgrunt.registerTask( '$1','[description]', function(){\n\t\t\|\n\t\tgrunt.log.writeln('completed[' + this.name + ']').ok();\n\t});\n};
+extJSAppTemplate|/**\n *  Main starting point for the application\n**/\nExt.Loader.setPath( "Ext", "ext/src" );\n\nExt.application({\n\tname: "APP",\n\tappFolder: "app",\n\t\n\t//controllers: [],\n\t\n\t//views: [],\n\t\n\tlaunch: function(){\n\t\tExt.create( "Ext.container.Viewport", {\n\t\t\tlayout: "fit",\n\t\t\titems: [\n\t\t\t/*\n\t\t\t{\n\t\t\t\txtype: 'panel',\n\t\t\t\ttitle: 'Example title',\n\t\t\t\thtml: 'some body here...'\n\t\t\t},\n\t\t\t*/\n\t\t\t\|\n\t\t\t]\n\t\t});\n\t}\n});
+sencha2ModelTemplate|/*global '_' Ext console */\nExt.define( '$2', {\n\textend: '$1',\n\t\n\tconfig: {\n\t\tfields: [\|]\n\t}\n});
+staticStep|"st_$1": {\n\t"selectMode": "single",\n\t"isFacet": false,\n\t"isGlobal": false,\n\t"useGlobal": false,\n\t"type": "static",\n\t"start": [\n\t\t{\n\t\t\t"alias": "lbl"\n\t\t}\n\t],\n\t"values": [\n\t\t{\n\t\t\t"display": "Label",\n\t\t\t"value": {\n\t\t\t\t"alias": "lbl"\n\t\t\t}\n\t\t}\n\t]\n}
+[uscript]

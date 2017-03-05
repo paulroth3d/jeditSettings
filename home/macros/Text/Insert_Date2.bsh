@@ -1,0 +1,26 @@
+void insertDate()
+{
+	Calendar rightNow = Calendar.getInstance();
+
+	// zone offset with daylight savings
+	int zoffset = (rightNow.get(Calendar.ZONE_OFFSET) +
+	rightNow.get(Calendar.DST_OFFSET)) / 60000;
+
+	// parsing current hour, minute and second
+	double h = rightNow.get(Calendar.HOUR_OF_DAY);
+	double m = rightNow.get(Calendar.MINUTE);
+	double s = rightNow.get(Calendar.SECOND);
+	double y = rightNow.get(Calendar.YEAR);
+	double M = rightNow.get(Calendar.MONTH);
+	double d = rightNow.get(Calendar.DATE);
+
+	// calculating internet time
+
+	// inserting date and internet time to textarea
+	textArea.setSelectedText( String.format("%d",(int)y) + "_" + String.format("%d",(int)(M+1)) + "_" + String.format("%d",(int)d) );
+}
+
+if(buffer.isReadOnly())
+	Macros.error(view, NotEditableMessage);
+else
+	insertDate();

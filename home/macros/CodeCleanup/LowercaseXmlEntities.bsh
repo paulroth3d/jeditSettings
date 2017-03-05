@@ -1,0 +1,127 @@
+/**
+ * .bsh - Converts XML style entities to lowercase (also works with HTML)
+ * 
+ * $Id$
+ */
+
+import gnu.regexp.*;
+import javax.swing.border.*;
+
+void start( View view ){
+	//Macros.message( view, "starting now" );
+	this.view = view;
+	
+	String regex = "<\\s*(/?)([a-zA-Z0-9]+)([^>]*>)";//"<\\s*((/\\s*)?[a-z]*[A-Z][^\\s]*)";
+	RE re = null;
+	StringBuilder result = new StringBuilder();
+	
+	try {
+		re = new RE( regex );
+	} catch (REException err ){
+		Macros.error( view, "Could not compile regex[" + regex + "]" );
+	}
+	
+	//Macros.message( view, "Before getting bufferText" );
+	JEditTextArea area = view.getTextArea();
+	String bufferText = area.getText( 0, area.getBufferLength() );
+	//Macros.message( view, "After getting bufferText" );
+	
+	//bufferText manipulated
+	REMatch[] matches = re.getAllMatches( bufferText, 0 );
+	REMatch match;
+	Macros.message( view, "Number of matches:" + matches.length );
+	
+	matches = sortMatches( matches );
+	
+	if( matches.length > 0 ){
+		int lastIndex = 0;
+		///Macros.message( view, "FirstMatch:" + matchToString( matches[0] ) );
+		//Macros.message( view, "FirstMatch start[" + matches[0].getStartIndex() + "] endIndex[" + matches[0].getEndIndex() + "]" );
+		//result.append( bufferText.substring( 0, matches[0].getStartIndex() ) );
+		
+		//work with inbetween
+		for( int i = 0; i < matches.length; i++ ){
+			match = matches[i];
+			//Macros.message( view, "match:" + matchToString( match ) );
+			//Macros.message( view, "tag:\n" + bufferText.substring( match.getStartIndex(), match.getEndIndex() ) );
+			//<\\s*(/?)([a-zA-Z0-9]+)([^>]+>)
+			//Macros.message( view, "lastIndex[" + lastIndex + "] startIndex[" + match.getStartIndex() + "]" );
+			
+			if( match.getStartIndex() > lastIndex ){
+				result.append( bufferText.substring( lastIndex, match.getStartIndex() ) );
+			}
+			result.append( "<" );
+			result.append( match.toString( 1 ) );
+			result.append( match.toString(2).toLowerCase() );
+			result.append( match.toString(3) );
+			lastIndex = match.getEndIndex();
+		}
+		
+		result.append( bufferText.substring( lastIndex ) );
+	} else {
+		result.append( bufferText );
+	}
+	
+	newBuffer = jEdit.newFile( view );
+	area = view.getTextArea();
+	area.setText( result.toString() );
+}
+
+REMatch[] sortMatches( REMatch[] matches ){
+	//Macros.message( view, "Before sorting" );
+	REMatch[] result = new REMatch[ matches.length ];
+	
+	int minValue, tValue, i, j;
+	REMatch tMatch;
+	
+	for( i = 0; i < matches.length; i++ ){
+		if( matches[i] == null ){
+			Macros.message( view, "Match[" + i + "] is null" );
+		}
+	}
+	
+	for( i = 0; i < matches.length - 1; i++ ){
+		minValue = i;
+		for( j = i+1; j < matches.length; j++ ){
+			if( matches[j].getStartIndex() < matches[minValue].getStartIndex() ){
+				minValue = j;
+			}
+		}
+		if( minValue != i ){
+			Macros.message( view, "Found match out of place" );
+			Macros.message( view, "Found match out of order[" + i + ":" + minValue + "] - [" + matches[i].getStartIndex() + ":" + matches[minValue].getStartIndex() + "]" );
+			tMatch = matches[minValue];
+			matches[minValue] = matches[i];
+			matches[i] = tMatch;
+		}
+	}
+	
+	//Macros.message( view, "after sorting" );
+	return( matches );
+}
+
+REMatch[] reverseMatches( REMatch[] matches ){
+	Macros.message( view, "Before reversing" );
+	REMatch[] result = new REMatch[ matches.length ];
+	
+	for( int i = 0; i < matches.length; i++ ){
+		result[i] = matches[ matches.length - i - 1 ];
+	}
+	
+	Macros.message( view, "After reversing" );
+	return( result );
+}
+
+String matchToString( REMatch match ){
+	if( match == null ){
+		return( "<REMatch:NULL />" );
+	} else {
+		return( "<REMatch start='" + match.getStartIndex() + "' end='" + match.getEndIndex() + "'>\n" + match.toString() + "\n</REMatch>" );
+	}
+}
+
+if( buffer.isReadOnly() ){
+	Macros.error( view, "Buffer is read-only, and cannot be modified" );
+} else {
+	start( view );    //to not show dialog, uncomment this and comment prev line
+}

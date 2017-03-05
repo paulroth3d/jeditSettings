@@ -1,0 +1,64 @@
+/**
+ * .bsh - Ensures that lines match in their leading whitespace.
+ * 
+ * $Id$
+ */
+
+import gnu.regexp.*;
+import javax.swing.border.*;
+
+void start( View view ){
+	//Macros.message( view, "starting now" );
+	this.view = view;
+	
+	REMatch match;
+	String regex = "\\n[ \\t]*\\n";
+	RE re = null;
+	StringBuilder result = new StringBuilder();
+	
+	try {
+		re = new RE( regex );
+	} catch (REException err ){
+		Macros.error( view, "Could not compile regex[" + regex + "]" );
+	}
+	
+	//Macros.message( view, "Before getting bufferText" );
+	JEditTextArea area = view.getTextArea();
+	String bufferText = area.getText( 0, area.getBufferLength() );
+	//Macros.message( view, "After getting bufferText" );
+	
+	bufferText = re.substituteAll( bufferText, "\n\n" );
+	
+	regex = "\\n([ \\t]+)([^\\n]+)\\n\\n";
+	try {
+		re = new RE( regex );
+	} catch (REException err ){
+		Macros.error( view, "Could not compile regex[" + regex + "]" );
+	}
+	
+	Macros.message( view, "Before checking empty lines" );
+	match = re.getMatch( bufferText );
+	while( match != null ){
+		Macros.message( view, "Found empty line" );
+		bufferText = re.substituteAll( bufferText, "\n$1$2\n$1\n" );
+		match = re.getMatch( bufferText );
+	}
+	
+	newBuffer = jEdit.newFile( view );
+	area = view.getTextArea();
+	area.setText( bufferText );
+}
+
+String matchToString( REMatch match ){
+	if( match == null ){
+		return( "<REMatch:NULL />" );
+	} else {
+		return( "<REMatch start='" + match.getStartIndex() + "' end='" + match.getEndIndex() + "'>\n" + match.toString() + "\n</REMatch>" );
+	}
+}
+
+if( buffer.isReadOnly() ){
+	Macros.error( view, "Buffer is read-only, and cannot be modified" );
+} else {
+	start( view );    //to not show dialog, uncomment this and comment prev line
+}

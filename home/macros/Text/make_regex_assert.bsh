@@ -1,0 +1,64 @@
+/**
+ *  Replaces the current selection with a regex that would find those instances
+ *  where the characters were not found like that.
+**/
+
+void start( View view ){
+	this.view = view;
+	
+	Selection[] selections = textArea.getSelection();
+	Selection select;
+	String selected;
+	String result;
+	
+	if( selections == null || selections.length < 1 ){
+		Macros.error( view, "No lines selected" );
+		return( null );
+	}
+	
+	for( i = 0; i < selections.length; i++ ){
+		select = selections[i];
+		selected = textArea.getSelectedText( select );
+		result = makeRegexAssert( selected );
+		textArea.setSelectedText( select, result );
+	}
+}
+
+String makeRegexAssert( String str ){
+	char[] chars = str.toCharArray();
+	String currentChar;
+	StringBuilder builder = new StringBuilder();
+	StringBuilder result = new StringBuilder();
+	
+	if( chars.length > 0 ){
+		currentChar = cleanChar( chars[0] );
+		builder.append( currentChar );
+		result.append( "[^" ).append( currentChar ).append( "]" );
+		
+		for( i = 1; i < chars.length; i++ ){
+			currentChar = cleanChar( chars[i] );
+			result.append( "|" ).append( builder.toString() ).append( "[^" ).append( currentChar ).append( "]" );
+			builder.append( currentChar );
+		}
+	}
+	
+	return( "(" + result.toString() + ")" );
+}
+
+String cleanChar( char c ){
+	if( c == '\n' ){
+		return( "\\n" );
+	} else if( c == '\t'){
+		return( "\\t" );
+	} else if( c == '[' || c == ']' ){
+		return( "\\" + c );
+	} else {
+		return( "" + c );
+	}
+}
+
+if( buffer.isReadOnly() ){
+	Macros.error( view, "Buffer is Read Only, and cannot be modified");
+} else {
+	start( view );
+}

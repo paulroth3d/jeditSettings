@@ -1,0 +1,49 @@
+/**
+ * .bsh - Adds two long numbers together
+ * 
+ * $Id$
+ */
+void start( View view, String bufferText, Selection sel ){
+	var time1 = "";
+	var time2 = "";
+	
+	longVal[] values = new LinkedList();
+	
+	
+	
+	try {
+		time1 = result[0];
+		time2 = result[1];
+	} catch( Exception err ){
+		Macros.message( view, "Unable to parse string:" + bufferText );
+	}
+	
+	var diff = parseInput( view, time1, time2 );
+	
+	textArea.setSelectedText( sel, bufferText + ":" + diff );
+}
+
+int getNext( String sel ){
+	
+}
+
+long parseInput( View view, String time1, String time2 ){
+	try {
+		time1Long = new Long( time1 ).longValue();
+		time2Long = new Long( time2 ).longValue();
+		var result = time1Long + time2Long;
+		Macros.message( view, "" + result );
+		return( result );
+	} catch( Exception err ){
+		Macros.message( view, "unable to parse DateStr:" + err );
+		return;
+	}
+}
+
+Selection[] selections = textArea.getSelection();
+//Macros.message( view, "Number of selections:" + selections.length );
+if( selections.length == 0 ){
+	showDialog( view ); //to show dialog uncomment this and comment next line
+} else {
+	replaceStart( view, textArea.getSelectedText( selections[0] ), selections[0] );
+}

@@ -1,0 +1,378 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE MODE SYSTEM "xmode.dtd">
+
+<MODE>
+	<PROPS>
+		<PROPERTY NAME="commentStart" VALUE="&lt;!--" />
+		<PROPERTY NAME="commentEnd" VALUE="--&gt;" />
+	</PROPS>
+
+	<RULES IGNORE_CASE="TRUE">
+		<!-- SGML comment -->
+		<SPAN TYPE="COMMENT1">
+			<BEGIN>&lt;!--</BEGIN>
+			<END>--&gt;</END>
+		</SPAN>
+
+		<!-- JavaScript -->
+		<SPAN_REGEXP TYPE="MARKUP" HASH_CHAR="&lt;" DELEGATE="JAVASCRIPT">
+			<BEGIN>&lt;(?i)(script)</BEGIN>
+			<END>&lt;/$1&gt;</END>
+		</SPAN_REGEXP>
+
+		<!-- stylesheet -->
+		<SPAN TYPE="MARKUP" DELEGATE="CSS">
+			<BEGIN>&lt;STYLE</BEGIN>
+			<END>&lt;/STYLE&gt;</END>
+		</SPAN>
+
+		<!-- DTD instructions -->
+		<SPAN TYPE="KEYWORD2" DELEGATE="xml::DTD-TAGS">
+			<BEGIN>&lt;!</BEGIN>
+			<END>&gt;</END>
+		</SPAN>
+
+		<!-- markup tags -->
+		<SPAN TYPE="MARKUP" DELEGATE="TAGS">
+			<BEGIN>&lt;</BEGIN>
+			<END>&gt;</END>
+		</SPAN>
+
+		<!-- SGML entities -->
+		<SPAN TYPE="LITERAL2" NO_WORD_BREAK="TRUE">
+			<BEGIN>&amp;</BEGIN>
+			<END>;</END>
+		</SPAN>
+	</RULES>
+
+	<!-- ESCAPE is not exactly right but it is needed to correctly
+	     handle JavaScript in on* parameters.
+             NOTE: ESCAPE moved from RULE to SPANs! -->
+	<RULES SET="TAGS" DEFAULT="MARKUP">
+		<!-- Inline CSS -->
+ 		<SPAN_REGEXP AT_WORD_START="TRUE" TYPE="MARKUP" DELEGATE="css::PROPERTIES" HASH_CHAR="style">
+			<BEGIN>style\s*=\s*(["'])</BEGIN>
+			<END>$1</END>
+		</SPAN_REGEXP>
+
+		<!-- Javascript: delegate on* attributes to Javascript mode -->
+ 		<SPAN_REGEXP AT_WORD_START="TRUE" DELEGATE="javascript::MAIN" HASH_CHAR="on" TYPE="MARKUP">
+			<BEGIN>on[a-z]+\s*=\s*(["'])</BEGIN>
+			<END>$1</END>
+		</SPAN_REGEXP>
+
+		<!-- NOTE: no ESCAPE for quotes, at least for attributes; e.g onclick="alert(\"foo\");" is invalid! -->
+		<SPAN TYPE="LITERAL1">
+			<BEGIN>"</BEGIN>
+			<END>"</END>
+		</SPAN>
+		<SPAN TYPE="LITERAL1">
+			<BEGIN>'</BEGIN>
+			<END>'</END>
+		</SPAN>
+
+		<SEQ TYPE="OPERATOR">=</SEQ>
+
+		<KEYWORDS>
+			<!-- HTML/XHTML elements, taken from http://de.selfhtml.org/html/referenz/elemente.htm -->
+			<!-- updated to include html5 elements. Obsolete and deprecated elements
+			are still here for backward compatibility. -->
+			<KEYWORD1>a</KEYWORD1>
+			<KEYWORD1>abbr</KEYWORD1>
+			<KEYWORD1>acronym</KEYWORD1>
+			<KEYWORD1>address</KEYWORD1>
+			<KEYWORD1>applet</KEYWORD1>
+			<KEYWORD1>area</KEYWORD1>
+			<KEYWORD1>article</KEYWORD1>
+			<KEYWORD1>aside</KEYWORD1>
+			<KEYWORD1>audio</KEYWORD1>
+			<KEYWORD1>b</KEYWORD1>
+			<KEYWORD1>base</KEYWORD1>
+			<KEYWORD1>basefont</KEYWORD1>
+			<KEYWORD1>bdi</KEYWORD1>
+			<KEYWORD1>bdo</KEYWORD1>
+			<KEYWORD1>big</KEYWORD1>
+			<KEYWORD1>blockquote</KEYWORD1>
+			<KEYWORD1>body</KEYWORD1>
+			<KEYWORD1>br</KEYWORD1>
+			<KEYWORD1>button</KEYWORD1>
+			<KEYWORD1>canvas</KEYWORD1>
+			<KEYWORD1>caption</KEYWORD1>
+			<KEYWORD1>center</KEYWORD1>
+			<KEYWORD1>cite</KEYWORD1>
+			<KEYWORD1>code</KEYWORD1>
+			<KEYWORD1>col</KEYWORD1>
+			<KEYWORD1>colgroup</KEYWORD1>
+			<KEYWORD1>command</KEYWORD1>
+			<KEYWORD1>data</KEYWORD1>
+			<KEYWORD1>datalist</KEYWORD1>
+			<KEYWORD1>dd</KEYWORD1>
+			<KEYWORD1>del</KEYWORD1>
+			<KEYWORD1>details</KEYWORD1>
+			<KEYWORD1>dfn</KEYWORD1>
+			<KEYWORD1>dir</KEYWORD1>
+			<KEYWORD1>div</KEYWORD1>
+			<KEYWORD1>dl</KEYWORD1>
+			<KEYWORD1>dt</KEYWORD1>
+			<KEYWORD1>em</KEYWORD1>
+			<KEYWORD1>embed</KEYWORD1>
+			<KEYWORD1>fieldset</KEYWORD1>
+			<KEYWORD1>figcaption</KEYWORD1>
+			<KEYWORD1>figure</KEYWORD1>
+			<KEYWORD1>font</KEYWORD1>
+			<KEYWORD1>footer</KEYWORD1>
+			<KEYWORD1>form</KEYWORD1>
+			<KEYWORD1>frame</KEYWORD1>
+			<KEYWORD1>frameset</KEYWORD1>
+			<KEYWORD1>h1</KEYWORD1>
+			<KEYWORD1>h2</KEYWORD1>
+			<KEYWORD1>h3</KEYWORD1>
+			<KEYWORD1>h4</KEYWORD1>
+			<KEYWORD1>h5</KEYWORD1>
+			<KEYWORD1>h6</KEYWORD1>
+			<KEYWORD1>head</KEYWORD1>
+			<KEYWORD1>header</KEYWORD1>
+			<KEYWORD1>hgroup</KEYWORD1>
+			<KEYWORD1>hr</KEYWORD1>
+			<KEYWORD1>html</KEYWORD1>
+			<KEYWORD1>i</KEYWORD1>
+			<KEYWORD1>iframe</KEYWORD1>
+			<KEYWORD1>img</KEYWORD1>
+			<KEYWORD1>input</KEYWORD1>
+			<KEYWORD1>ins</KEYWORD1>
+			<KEYWORD1>isindex</KEYWORD1>
+			<KEYWORD1>kbd</KEYWORD1>
+			<KEYWORD1>keygen</KEYWORD1>
+			<KEYWORD1>label</KEYWORD1>
+			<KEYWORD1>legend</KEYWORD1>
+			<KEYWORD1>li</KEYWORD1>
+			<KEYWORD1>link</KEYWORD1>
+			<KEYWORD1>map</KEYWORD1>
+			<KEYWORD1>mark</KEYWORD1>
+			<KEYWORD1>menu</KEYWORD1>
+			<KEYWORD1>meta</KEYWORD1>
+			<KEYWORD1>meter</KEYWORD1>
+			<KEYWORD1>nav</KEYWORD1>
+			<KEYWORD1>noframes</KEYWORD1>
+			<KEYWORD1>noscript</KEYWORD1>
+			<KEYWORD1>object</KEYWORD1>
+			<KEYWORD1>ol</KEYWORD1>
+			<KEYWORD1>optgroup</KEYWORD1>
+			<KEYWORD1>option</KEYWORD1>
+			<KEYWORD1>output</KEYWORD1>
+			<KEYWORD1>p</KEYWORD1>
+			<KEYWORD1>param</KEYWORD1>
+			<KEYWORD1>pre</KEYWORD1>
+			<KEYWORD1>progress</KEYWORD1>
+			<KEYWORD1>q</KEYWORD1>
+			<KEYWORD1>rp</KEYWORD1>
+			<KEYWORD1>rt</KEYWORD1>
+			<KEYWORD1>ruby</KEYWORD1>
+			<KEYWORD1>s</KEYWORD1>
+			<KEYWORD1>samp</KEYWORD1>
+			<KEYWORD1>script</KEYWORD1>
+			<KEYWORD1>section</KEYWORD1>
+			<KEYWORD1>select</KEYWORD1>
+			<KEYWORD1>small</KEYWORD1>
+			<KEYWORD1>source</KEYWORD1>
+			<KEYWORD1>span</KEYWORD1>
+			<KEYWORD1>strike</KEYWORD1>
+			<KEYWORD1>strong</KEYWORD1>
+			<KEYWORD1>style</KEYWORD1>
+			<KEYWORD1>sub</KEYWORD1>
+			<KEYWORD1>summary</KEYWORD1>
+			<KEYWORD1>sup</KEYWORD1>
+			<KEYWORD1>table</KEYWORD1>
+			<KEYWORD1>tbody</KEYWORD1>
+			<KEYWORD1>td</KEYWORD1>
+			<KEYWORD1>textarea</KEYWORD1>
+			<KEYWORD1>tfoot</KEYWORD1>
+			<KEYWORD1>th</KEYWORD1>
+			<KEYWORD1>thead</KEYWORD1>
+			<KEYWORD1>time</KEYWORD1>
+			<KEYWORD1>title</KEYWORD1>
+			<KEYWORD1>tr</KEYWORD1>
+			<KEYWORD1>track</KEYWORD1>
+			<KEYWORD1>tt</KEYWORD1>
+			<KEYWORD1>u</KEYWORD1>
+			<KEYWORD1>ul</KEYWORD1>
+			<KEYWORD1>var</KEYWORD1>
+			<KEYWORD1>video</KEYWORD1>
+			<KEYWORD1>wbr</KEYWORD1>
+			
+			<!-- apex specific -->
+			
+			<KEYWORD1>apex</KEYWORD1>
+			<KEYWORD1>chatter</KEYWORD1>
+			<KEYWORD1>flow</KEYWORD1>
+			<KEYWORD1>ideas</KEYWORD1>
+			<KEYWORD1>knowledge</KEYWORD1>
+			<KEYWORD1>liveAgent</KEYWORD1>
+			<KEYWORD1>messaging</KEYWORD1>
+			<KEYWORD1>site</KEYWORD1>
+			<KEYWORD1>social</KEYWORD1>
+			<KEYWORD1>support</KEYWORD1>
+			
+			<KEYWORD2>actionFunction</KEYWORD2>
+			<KEYWORD2>actionPoller</KEYWORD2>
+			<KEYWORD2>actionRegion</KEYWORD2>
+			<KEYWORD2>actionStatus</KEYWORD2>
+			<KEYWORD2>actionSupport</KEYWORD2>
+			<KEYWORD2>allfeeds</KEYWORD2>
+			<KEYWORD2>areaSeries</KEYWORD2>
+			<KEYWORD2>articleCaseToolbar</KEYWORD2>
+			<KEYWORD2>articleList</KEYWORD2>
+			<KEYWORD2>articleRendererToolbar</KEYWORD2>
+			<KEYWORD2>articleTypeList</KEYWORD2>
+			<KEYWORD2>attachment</KEYWORD2>
+			<KEYWORD2>attribute</KEYWORD2>
+			<KEYWORD2>axis</KEYWORD2>
+			<KEYWORD2>barSeries</KEYWORD2>
+			<KEYWORD2>canvasApp</KEYWORD2>
+			<KEYWORD2>caseArticles</KEYWORD2>
+			<KEYWORD2>caseFeed</KEYWORD2>
+			<KEYWORD2>categoryList</KEYWORD2>
+			<KEYWORD2>changepassword</KEYWORD2>
+			<KEYWORD2>chart</KEYWORD2>
+			<KEYWORD2>chartLabel</KEYWORD2>
+			<KEYWORD2>chartTips</KEYWORD2>
+			<KEYWORD2>clickToDial</KEYWORD2>
+			<KEYWORD2>clientChat</KEYWORD2>
+			<KEYWORD2>clientChatAlertMessage</KEYWORD2>
+			<KEYWORD2>clientChatEndButton</KEYWORD2>
+			<KEYWORD2>clientChatInput</KEYWORD2>
+			<KEYWORD2>clientChatLog</KEYWORD2>
+			<KEYWORD2>clientChatMessages</KEYWORD2>
+			<KEYWORD2>clientChatQueuePosition</KEYWORD2>
+			<KEYWORD2>clientChatSaveButton</KEYWORD2>
+			<KEYWORD2>clientChatSendButton</KEYWORD2>
+			<KEYWORD2>clientChatStatusMessage</KEYWORD2>
+			<KEYWORD2>column</KEYWORD2>
+			<KEYWORD2>commandButton</KEYWORD2>
+			<KEYWORD2>commandLink</KEYWORD2>
+			<KEYWORD2>component</KEYWORD2>
+			<KEYWORD2>componentBody</KEYWORD2>
+			<KEYWORD2>composition</KEYWORD2>
+			<KEYWORD2>dataList</KEYWORD2>
+			<KEYWORD2>dataTable</KEYWORD2>
+			<KEYWORD2>define</KEYWORD2>
+			<KEYWORD2>detail</KEYWORD2>
+			<KEYWORD2>detailOutputLink</KEYWORD2>
+			<KEYWORD2>dynamicComponent</KEYWORD2>
+			<KEYWORD2>emailHeader</KEYWORD2>
+			<KEYWORD2>emailPublisher</KEYWORD2>
+			<KEYWORD2>emailTemplate</KEYWORD2>
+			<KEYWORD2>enhancedList</KEYWORD2>
+			<KEYWORD2>facet</KEYWORD2>
+			<KEYWORD2>feed</KEYWORD2>
+			<KEYWORD2>feedWithFollowers</KEYWORD2>
+			<KEYWORD2>flash</KEYWORD2>
+			<KEYWORD2>follow</KEYWORD2>
+			<KEYWORD2>followers</KEYWORD2>
+			<KEYWORD2>forgotpassword</KEYWORD2>
+			<KEYWORD2>forgotpasswordconfirm</KEYWORD2>
+			<KEYWORD2>form</KEYWORD2>
+			<KEYWORD2>gaugeSeries</KEYWORD2>
+			<KEYWORD2>googleAnalyticsTracking</KEYWORD2>
+			<KEYWORD2>help</KEYWORD2>
+			<KEYWORD2>htmlEmailBody</KEYWORD2>
+			<KEYWORD2>iframe</KEYWORD2>
+			<KEYWORD2>image</KEYWORD2>
+			<KEYWORD2>include</KEYWORD2>
+			<KEYWORD2>includeScript</KEYWORD2>
+			<KEYWORD2>inlineEditSupport</KEYWORD2>
+			<KEYWORD2>inputCheckbox</KEYWORD2>
+			<KEYWORD2>inputField</KEYWORD2>
+			<KEYWORD2>inputFile</KEYWORD2>
+			<KEYWORD2>inputHidden</KEYWORD2>
+			<KEYWORD2>inputSecret</KEYWORD2>
+			<KEYWORD2>inputText</KEYWORD2>
+			<KEYWORD2>inputTextarea</KEYWORD2>
+			<KEYWORD2>insert</KEYWORD2>
+			<KEYWORD2>interview</KEYWORD2>
+			<KEYWORD2>legend</KEYWORD2>
+			<KEYWORD2>lineSeries</KEYWORD2>
+			<KEYWORD2>listOutputLink</KEYWORD2>
+			<KEYWORD2>listViews</KEYWORD2>
+			<KEYWORD2>logCallPublisher</KEYWORD2>
+			<KEYWORD2>login</KEYWORD2>
+			<KEYWORD2>message</KEYWORD2>
+			<KEYWORD2>messages</KEYWORD2>
+			<KEYWORD2>newsfeed</KEYWORD2>
+			<KEYWORD2>outputField</KEYWORD2>
+			<KEYWORD2>outputLabel</KEYWORD2>
+			<KEYWORD2>outputLink</KEYWORD2>
+			<KEYWORD2>outputPanel</KEYWORD2>
+			<KEYWORD2>outputText</KEYWORD2>
+			<KEYWORD2>page</KEYWORD2>
+			<KEYWORD2>pageBlock</KEYWORD2>
+			<KEYWORD2>pageBlockButtons</KEYWORD2>
+			<KEYWORD2>pageBlockSection</KEYWORD2>
+			<KEYWORD2>pageBlockSectionItem</KEYWORD2>
+			<KEYWORD2>pageBlockTable</KEYWORD2>
+			<KEYWORD2>pageMessage</KEYWORD2>
+			<KEYWORD2>pageMessages</KEYWORD2>
+			<KEYWORD2>panelBar</KEYWORD2>
+			<KEYWORD2>panelBarItem</KEYWORD2>
+			<KEYWORD2>panelGrid</KEYWORD2>
+			<KEYWORD2>panelGroup</KEYWORD2>
+			<KEYWORD2>param</KEYWORD2>
+			<KEYWORD2>pieSeries</KEYWORD2>
+			<KEYWORD2>plainTextEmailBody</KEYWORD2>
+			<KEYWORD2>portalPublisher</KEYWORD2>
+			<KEYWORD2>previewAsAdmin</KEYWORD2>
+			<KEYWORD2>profileListOutputLink</KEYWORD2>
+			<KEYWORD2>profileViewer</KEYWORD2>
+			<KEYWORD2>radarSeries</KEYWORD2>
+			<KEYWORD2>registration</KEYWORD2>
+			<KEYWORD2>relatedList</KEYWORD2>
+			<KEYWORD2>repeat</KEYWORD2>
+			<KEYWORD2>scatterSeries</KEYWORD2>
+			<KEYWORD2>scontrol</KEYWORD2>
+			<KEYWORD2>sectionHeader</KEYWORD2>
+			<KEYWORD2>selectCheckboxes</KEYWORD2>
+			<KEYWORD2>selectList</KEYWORD2>
+			<KEYWORD2>selectOption</KEYWORD2>
+			<KEYWORD2>selectOptions</KEYWORD2>
+			<KEYWORD2>selectRadio</KEYWORD2>
+			<KEYWORD2>singleitemfeed</KEYWORD2>
+			<KEYWORD2>stylesheet</KEYWORD2>
+			<KEYWORD2>tab</KEYWORD2>
+			<KEYWORD2>tabPanel</KEYWORD2>
+			<KEYWORD2>toolbar</KEYWORD2>
+			<KEYWORD2>toolbarGroup</KEYWORD2>
+			<KEYWORD2>userPhotoUpload</KEYWORD2>
+			<KEYWORD2>variable</KEYWORD2>
+			<KEYWORD2>vote</KEYWORD2>
+			
+			<KEYWORD3>$Action</KEYWORD3>
+			<KEYWORD3>$API</KEYWORD3>
+			<KEYWORD3>$Component</KEYWORD3>
+			<KEYWORD3>$CurrentPage</KEYWORD3>
+			<KEYWORD3>$Label</KEYWORD3>
+			<KEYWORD3>$ObjectType</KEYWORD3>
+			<KEYWORD3>$Organization</KEYWORD3>
+			<KEYWORD3>$Page</KEYWORD3>
+			<KEYWORD3>$Resource</KEYWORD3>
+			<KEYWORD3>$SControl</KEYWORD3>
+			<KEYWORD3>$Site</KEYWORD3>
+			<KEYWORD3>$System</KEYWORD3>
+			<KEYWORD3>$User</KEYWORD3>
+			<KEYWORD3>$UserRole</KEYWORD3>
+			<KEYWORD3>$Profile</KEYWORD3>
+		</KEYWORDS>
+	</RULES>
+
+	<RULES SET="JAVASCRIPT" DEFAULT="MARKUP" IGNORE_CASE="TRUE">
+		<IMPORT DELEGATE="javascript::MAIN"/>
+	</RULES>
+
+	<RULES SET="BACK_TO_HTML" DEFAULT="MARKUP">
+		<SEQ TYPE="MARKUP" DELEGATE="html::MAIN">&gt;</SEQ>
+	</RULES>
+
+	<RULES SET="CSS" DEFAULT="MARKUP">
+		<SEQ TYPE="MARKUP" DELEGATE="css::MAIN">&gt;</SEQ>
+	</RULES>
+</MODE>

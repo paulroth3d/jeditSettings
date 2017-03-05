@@ -1,0 +1,51 @@
+/**
+ * .bsh - Adds two long numbers together
+ * 
+ * $Id$
+ */
+void start( View view, String bufferText, Selection sel ){
+	long long1;
+	long long2;
+	
+	int plusAddr = bufferText.indexOf( '+' );
+	int minusAddr = bufferText.indexOf( '-' );
+	int nextAddr = plusAddr;
+	if(plusAddr == -1){
+		nextAddr = minusAddr;
+	} else if((minusAddr > -1) && (minusAddr < plusAddr) ){
+		nextAddr = minusAddr;
+	}
+	
+	//Macros.message( view, "plus:" + plusAddr + ", minus:" + minusAddr );
+	if( nextAddr == -1 ){
+		Macros.error( view, "No operator found" );
+		return;
+	}
+	
+	String tStr;
+	tStr = bufferText.substring( 0, nextAddr );
+	//Macros.message( view, "firstOperand:" + tStr );
+	long1 = parseLong( tStr );
+	
+	tStr = bufferText.substring( nextAddr + 1 );
+	//Macros.message( view, "secondOperand:" + tStr );
+	long2 = parseLong( tStr );
+	
+	Macros.message( view, "" + long1 + "+" + long2 + "=" + (long1+long2) );
+	textArea.setSelectedText( sel, bufferText + ":" + (long1+long2) );
+}
+
+long parseLong( String str ){
+	long result;
+	try {
+		result = new Long( str ).longValue();
+		//Macros.message( view, "" + result );
+		return( result );
+	} catch( Exception err ){
+		Macros.message( view, "unable to parse string[" + str + "]:" + err );
+		return;
+	}
+}
+
+Selection[] selections = textArea.getSelection();
+start( view, textArea.getSelectedText( selections[0] ), selections[0] );
